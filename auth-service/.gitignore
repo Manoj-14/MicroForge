@@ -1,0 +1,32 @@
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*_test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# VS Code
+.vscode/
+
+# IDE files
+.idea/
+
+# Build directories
+bin/
+
+# Environment files
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
