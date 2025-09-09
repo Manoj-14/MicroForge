@@ -46,7 +46,7 @@ func main() {
 	}
 
 	// Start server
-	port := os.Getenv("PORT")
+	port := os.Getenv("AUTH_SERVICE_PORT")
 	if port == "" {
 		port = "8082"
 	}
