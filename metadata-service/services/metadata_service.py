@@ -1,3 +1,4 @@
+import platform
 import boto3
 import requests
 import socket
@@ -184,14 +185,20 @@ class MetadataService:
             return self._get_local_metadata()
 
     def _get_local_metadata(self):
-        """Get local development metadata"""
+        """Get real local development metadata"""
         return {
             'environment': 'local',
             'hostname': socket.gethostname(),
             'private_ip': self._get_private_ip(),
-            'platform': 'Local Development',
-            'region': 'local',
-            'availability_zone': 'local-az',
+            'platform': platform.system(),
+            'platform_release': platform.release(),
+            'platform_version': platform.version(),
+            'architecture': platform.machine(),
+            'cpu_count': psutil.cpu_count(logical=True),
+            'memory_total_gb': round(psutil.virtual_memory().total / (1024**3), 2),
+            'disk_total_gb': round(psutil.disk_usage('/').total / (1024**3), 2),
+            'region': os.environ.get('LOCAL_REGION', 'local'),
+            'availability_zone': os.environ.get('LOCAL_AZ', socket.gethostname()),
             'instance_id': f"local-{socket.gethostname()}",
             'note': 'Running in local development mode'
         }
