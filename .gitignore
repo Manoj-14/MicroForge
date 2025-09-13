@@ -1,3 +1,4 @@
 leaks*.json
 *leaks*.json
 *venv
+*.env
