@@ -1,8 +1,4 @@
 leaks*.json
 *leaks*.json
-<<<<<<< Updated upstream
-=======
 *venv
-*secrets
-.*env
->>>>>>> Stashed changes
+*.env
