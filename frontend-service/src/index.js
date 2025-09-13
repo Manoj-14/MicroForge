@@ -3,7 +3,11 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { initApiService } from './services/api';
 
+initApiService()
+  .then(() => ReactDOM.render(<App />, document.getElementById('root')))
+  .catch(err => console.error('Failed to init API service', err));
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

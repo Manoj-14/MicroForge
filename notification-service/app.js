@@ -83,7 +83,7 @@ process.on('SIGINT', () => {
     process.exit(0);
 });
 
-const PORT = process.env.PORT || 8083;
+const PORT = process.env.NOTIFICATION_SERVICE_PORT;
 
 
 initializeDatabase().then(() => {

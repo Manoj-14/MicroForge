@@ -254,9 +254,9 @@ def internal_error(error):
     }), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 8084))
+    port = int(os.environ.get('METADATA_SERVICE_PORT'))
     debug = os.environ.get('FLASK_ENV') == 'development'
-    
+    logger.info("Running on port %d", port)
     logger.info(f"Starting Metadata Service on port {port}")
     logger.info(f"Environment: {env_detector.detect_environment()}")
     

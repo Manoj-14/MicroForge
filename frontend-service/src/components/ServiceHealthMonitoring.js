@@ -26,24 +26,46 @@ import {
   Memory,
   NetworkCheck
 } from '@mui/icons-material';
+import { loadConfig } from "../config";
 
 function ServiceHealthMonitoring() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [config, setConfig] = useState(null);
+  const [configLoading, setConfigLoading] = useState(true);
 
+  // Load config on component mount
   useEffect(() => {
-    loadServiceHealth();
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(loadServiceHealth, 30000);
-    return () => clearInterval(interval);
+    const initConfig = async () => {
+      try {
+        const cfg = await loadConfig();
+        setConfig(cfg);
+      } catch (err) {
+        setError('Failed to load configuration: ' + err.message);
+      } finally {
+        setConfigLoading(false);
+      }
+    };
+
+    initConfig();
   }, []);
+
+  // Load service health after config is loaded
+  useEffect(() => {
+    if (config) {
+      loadServiceHealth();
+      // Auto-refresh every 30 seconds
+      const interval = setInterval(loadServiceHealth, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [config]);
 
   const checkServiceHealth = async (service) => {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
       
       const startTime = Date.now();
       const response = await fetch(service.healthUrl, {
@@ -84,15 +106,24 @@ function ServiceHealthMonitoring() {
   };
 
   const loadServiceHealth = async () => {
+    if (!config) return;
+    
     setLoading(true);
     setError('');
     
     try {
+      const {
+        REACT_APP_LOGIN_SERVICE_URL: LOGIN_SERVICE_URL,
+        REACT_APP_AUTH_SERVICE_URL: AUTH_SERVICE_URL,
+        REACT_APP_NOTIFICATION_SERVICE_URL: NOTIFICATION_SERVICE_URL,
+        REACT_APP_METADATA_SERVICE_URL: METADATA_SERVICE_URL,
+      } = config;
+
       const serviceConfigs = [
         {
           name: 'Frontend',
           port: 3000,
-          healthUrl: `${window.location.origin}`, // Current frontend
+          healthUrl: `${window.location.origin}`,
           endpoints: 4,
           technology: 'React',
           uptime: 'Running',
@@ -103,7 +134,7 @@ function ServiceHealthMonitoring() {
         {
           name: 'Login Service',
           port: 8081,
-          healthUrl: 'http://localhost:8081/actuator/health',
+          healthUrl: `${LOGIN_SERVICE_URL}/actuator/health`,
           endpoints: 6,
           technology: 'Spring Boot',
           uptime: 'N/A',
@@ -114,7 +145,7 @@ function ServiceHealthMonitoring() {
         {
           name: 'Auth Service',
           port: 8082,
-          healthUrl: 'http://localhost:8082/api/health',
+          healthUrl: `${AUTH_SERVICE_URL}/api/health`,
           endpoints: 3,
           technology: 'Go',
           uptime: 'N/A',
@@ -125,7 +156,7 @@ function ServiceHealthMonitoring() {
         {
           name: 'Notification Service',
           port: 8083,
-          healthUrl: 'http://localhost:8083/api/health',
+          healthUrl: `${NOTIFICATION_SERVICE_URL}/api/health`,
           endpoints: 8,
           technology: 'Node.js',
           uptime: 'N/A',
@@ -136,7 +167,7 @@ function ServiceHealthMonitoring() {
         {
           name: 'Metadata Service',
           port: 8084,
-          healthUrl: 'http://localhost:8084/api/health',
+          healthUrl: `${METADATA_SERVICE_URL}/api/health`,
           endpoints: 4,
           technology: 'Python',
           uptime: 'N/A',
@@ -161,6 +192,17 @@ function ServiceHealthMonitoring() {
     }
   };
 
+  // Show loading while config is loading
+  if (configLoading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <LinearProgress sx={{ width: '50%' }} />
+        <Typography sx={{ ml: 2 }}>Loading configuration...</Typography>
+      </Box>
+    );
+  }
+
+  // Rest of your component remains the same...
   const getStatusIcon = (status) => {
     switch (status) {
       case 'healthy':

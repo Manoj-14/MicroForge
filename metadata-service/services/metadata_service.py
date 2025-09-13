@@ -11,7 +11,7 @@ from utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
-class MetadataService:
+class   MetadataService:
     def __init__(self):
         self.env_detector = EnvironmentDetector()
         self.environment = self.env_detector.detect_environment()

@@ -48,9 +48,9 @@ func main() {
 	// Start server
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8082"
+		log.Fatal("AUTH_SERVICE_PORT not set in environment")
+		os.Exit(0)
 	}
-
 	log.Printf("Auth Service starting on port %s", port)
 	if err := router.Run(":" + port); err != nil {
 		log.Fatal("Failed to start server:", err)
