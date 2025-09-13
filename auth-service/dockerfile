@@ -1,0 +1,28 @@
+FROM golang:1.25.1-bookworm AS builder
+
+WORKDIR /usr/src/app
+
+COPY ./go.mod go.mod
+COPY ./go.sum go.sum
+
+RUN go mod download
+
+COPY ./handlers/ handlers/
+COPY ./models/ models/
+COPY ./utils/ utils/
+COPY ./middleware/ middleware/
+COPY ./main.go main.go
+
+RUN  CGO_ENABLED=0 GOOS=linux GO111MODULE=on go build -ldflags "-s -w" -o auth-service main.go
+
+RUN ls -la /usr/src/app
+
+FROM gcr.io/distroless/static-debian12:nonroot
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app/auth-service ./
+
+
+EXPOSE ${AUTH_SERVICE_PORT}
+
+ENTRYPOINT [ "./auth-service" ]

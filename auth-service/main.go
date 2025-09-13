@@ -46,7 +46,7 @@ func main() {
 	}
 
 	// Start server
-	port := os.Getenv("PORT")
+	port := os.Getenv("AUTH_SERVICE_PORT")
 	if port == "" {
 		log.Fatal("AUTH_SERVICE_PORT not set in environment")
 		os.Exit(0)
