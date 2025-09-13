@@ -1,0 +1,80 @@
+
+services:
+  metadata-service:
+    image: microforge-metadata-service:v1
+    container_name: metadata-service
+    ports:
+      - "8084:8084"
+    environment:
+      - FLASK_SECRET_KEY=f9731e7a0774ddebd70643e8c6046f4dc0ddf3eec637be8cb641f0e9d5e8dfd0
+      - FLASK_ENV=development
+      - METADATA_SERVICE_PORT=${METADATA_SERVICE_PORT}
+    restart: unless-stopped
+
+  auth-service:
+    image: microforge-auth-service:v1
+    container_name: auth-service
+    ports:
+      - "8082:8082"
+    environment:
+      - AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT}
+
+  microforge-frontend:
+    image: microforge-frontend-service:v1
+    container_name: microforge-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - metadata-service
+      - auth-service
+    environment:
+      - REACT_APP_LOGIN_SERVICE_URL=${REACT_APP_LOGIN_SERVICE_URL}
+      - REACT_APP_AUTH_SERVICE_URL=http://auth-service:${AUTH_SERVICE_PORT}
+      - REACT_APP_NOTIFICATION_SERVICE_URL=http://notification-service:${NOTIFICATION_SERVICE_PORT}
+      - REACT_APP_METADATA_SERVICE_URL=http://metadata-service:${METADATA_SERVICE_PORT}
+      - REACT_APP_API_BASE_URL=http://localhost:80
+
+  # login-mysql:
+  #   image: mysql
+  #   container_name: mysql
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_DATABASE: microforge
+  #     MYSQL_USER: root
+  #   volumes:
+  #     - ./mysql/empdir_users.sql:/docker-entrypoint-initdb.d/users.sql
+  #   ports:
+  #     - "3306:3306"
+
+  notification-mysql:
+    image: mysql
+    container_name: notification-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - NOTIFICATION_SERVICE_PORT=${NOTIFICATION_SERVICE_PORT}
+    volumes:
+      - ./mysql/empnotification_notifications.sql:/docker-entrypoint-initdb.d/notifications.sql
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  notification-service:
+    image: microforge-notification-service:v1
+    container_name: notification-service
+    ports:
+      - "8083:8083"
+    environment:
+      - MYSQL_HOST=notification-mysql
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_PORT=${MYSQL_PORT}
+    depends_on:
+      notification-mysql:
+        condition: service_healthy
