@@ -1,7 +1,7 @@
 
 services:
   metadata-service:
-    image: microforge-metadata-service:v1
+    image: microforge-metadata-service:v1.0.0
     container_name: metadata-service
     ports:
       - "8084:8084"
@@ -12,7 +12,7 @@ services:
     restart: unless-stopped
 
   auth-service:
-    image: microforge-auth-service:v1
+    image: microforge-auth-service:v1.0.0
     container_name: auth-service
     ports:
       - "8082:8082"
@@ -20,7 +20,7 @@ services:
       - AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT}
 
   microforge-frontend:
-    image: microforge-frontend-service:v1
+    image: microforge-frontend-service:v1.0.0
     container_name: microforge-frontend
     ports:
       - "3000:80"
@@ -34,47 +34,71 @@ services:
       - REACT_APP_METADATA_SERVICE_URL=http://metadata-service:${METADATA_SERVICE_PORT}
       - REACT_APP_API_BASE_URL=http://localhost:80
 
-  # login-mysql:
-  #   image: mysql
-  #   container_name: mysql
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: root
-  #     MYSQL_DATABASE: microforge
-  #     MYSQL_USER: root
-  #   volumes:
-  #     - ./mysql/empdir_users.sql:/docker-entrypoint-initdb.d/users.sql
-  #   ports:
-  #     - "3306:3306"
+  login-mysql:
+    image: mysql
+    container_name: login-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${LOGIN_SERVICE_DB_PASSWORD}
+      MYSQL_DATABASE: ${LOGIN_SERVICE_DB_NAME}
+    volumes:
+      - ./mysql/empdir_users.sql:/docker-entrypoint-initdb.d/users.sql
+    ports:
+      - "3308:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -h localhost -u root -p$$MYSQL_ROOT_PASSWORD -D $$MYSQL_DATABASE -e 'SELECT 1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  login-service:
+    image: microforge-login-service:v1.0.0
+    container_name: login-service
+    ports:
+      - 8081:8081
+    environment:
+      - LOGIN_SERVICE_PORT=${LOGIN_SERVICE_PORT}
+      - DB_HOST=login-mysql
+      - DB_PORT=${LOGIN_SERVICE_DB_PORT}
+      - DB_NAME=${LOGIN_SERVICE_DB_NAME}
+      - DB_USERNAME=${LOGIN_SERVICE_DB_USERNAME}
+      - DB_PASSWORD=${LOGIN_SERVICE_DB_PASSWORD}
+      - JWT_SECRET=${LOGIN_SERVICE_JWT_SECRET}
+      - JWT_EXPIRATION_MS=${LOGIN_SERVICE_JWT_EXPIRATION_MS}
+      - NOTIFICATION_SERVICE_URL=http://notification-service:${NOTIFICATION_SERVICE_PORT}
+    depends_on:
+      login-mysql:
+        condition: service_healthy
 
   notification-mysql:
     image: mysql
     container_name: notification-mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - NOTIFICATION_SERVICE_PORT=${NOTIFICATION_SERVICE_PORT}
+      - MYSQL_ROOT_PASSWORD=${NOTIFICATION_SERVICE_DB_PASSWORD}
+      - MYSQL_DATABASE=${NOTIFICATION_SERVICE_DB_DATABASE}
     volumes:
       - ./mysql/empnotification_notifications.sql:/docker-entrypoint-initdb.d/notifications.sql
     ports:
       - "3307:3306"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_PASSWORD}"]
+      test: ["CMD-SHELL", "mysql -h localhost -u root -p$$MYSQL_ROOT_PASSWORD -D $$MYSQL_DATABASE -e 'SELECT 1'"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
 
   notification-service:
-    image: microforge-notification-service:v1
+    image: microforge-notification-service:v1.0.0
     container_name: notification-service
     ports:
       - "8083:8083"
     environment:
       - MYSQL_HOST=notification-mysql
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_USER=${NOTIFICATION_SERVICE_DB_USER}
+      - MYSQL_PASSWORD=${NOTIFICATION_SERVICE_DB_PASSWORD}
+      - MYSQL_DATABASE=${NOTIFICATION_SERVICE_DB_DATABASE}
+      - MYSQL_PORT=${NOTIFICATION_SERVICE_DB_PORT}
+      - NOTIFICATION_SERVICE_PORT=${NOTIFICATION_SERVICE_PORT}
     depends_on:
       notification-mysql:
         condition: service_healthy

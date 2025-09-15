@@ -1,0 +1,21 @@
+FROM eclipse-temurin:21.0.5_11-jdk-jammy AS builder
+
+WORKDIR /app
+
+COPY mvnw .
+COPY .mvn .mvn/
+
+COPY pom.xml ./pom.xml
+COPY ./src ./src/
+
+RUN chmod +x mvnw && ./mvnw clean package -DskipTests
+
+FROM gcr.io/distroless/java21-debian12:latest
+
+WORKDIR /app
+
+COPY --from=builder /app/target/login-service-1.0.0.jar login-service.jar
+
+EXPOSE ${LOGIN_SERVICE_PORT}
+
+ENTRYPOINT [ "java" , "-jar", "login-service.jar" ]
