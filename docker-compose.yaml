@@ -1,7 +1,7 @@
 
 services:
   metadata-service:
-    image: microforge-metadata-service:v1.0.0
+    image: manojmdocker14/microforge-metadata-service:v1.0.0
     container_name: metadata-service
     ports:
       - "8084:8084"
@@ -12,7 +12,7 @@ services:
     restart: unless-stopped
 
   auth-service:
-    image: microforge-auth-service:v1.0.0
+    image: manojmdocker14/microforge-auth-service:v1.0.0
     container_name: auth-service
     ports:
       - "8082:8082"
@@ -20,17 +20,19 @@ services:
       - AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT}
 
   microforge-frontend:
-    image: microforge-frontend-service:v1.0.0
+    image: frontend-service:v1
     container_name: microforge-frontend
     ports:
       - "3000:80"
     depends_on:
       - metadata-service
       - auth-service
+      - login-service
+      - notification-service
     environment:
-      - REACT_APP_LOGIN_SERVICE_URL=${REACT_APP_LOGIN_SERVICE_URL}
+      - REACT_APP_LOGIN_SERVICE_URL=http://login-service:${LOGIN_SERVICE_PORT}
       - REACT_APP_AUTH_SERVICE_URL=http://auth-service:${AUTH_SERVICE_PORT}
-      - REACT_APP_NOTIFICATION_SERVICE_URL=http://notification-service:${NOTIFICATION_SERVICE_PORT}
+      - REACT_APP_NOTIFICATION_SERVICE_URL=http://notcation-service:${NOTIFICATION_SERVICE_PORT}
       - REACT_APP_METADATA_SERVICE_URL=http://metadata-service:${METADATA_SERVICE_PORT}
       - REACT_APP_API_BASE_URL=http://localhost:80
 
@@ -52,7 +54,7 @@ services:
       start_period: 30s
 
   login-service:
-    image: microforge-login-service:v1.0.0
+    image: manojmdocker14/microforge-login-service:v1.0.0
     container_name: login-service
     ports:
       - 8081:8081
@@ -88,7 +90,7 @@ services:
       start_period: 30s
 
   notification-service:
-    image: microforge-notification-service:v1.0.0
+    image: manojmdocker14/microforge-notification-service:v1.0.0
     container_name: notification-service
     ports:
       - "8083:8083"
