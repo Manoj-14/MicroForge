@@ -13,6 +13,11 @@ export async function initApiService() {
     REACT_APP_METADATA_SERVICE_URL: METADATA_SERVICE_URL,
   } = cfg;
 
+  console.log('LOGIN_SERVICE_URL:', LOGIN_SERVICE_URL);
+  console.log('AUTH_SERVICE_URL:', AUTH_SERVICE_URL);
+  console.log('NOTIFICATION_SERVICE_URL:', NOTIFICATION_SERVICE_URL);
+  console.log('METADATA_SERVICE_URL:', METADATA_SERVICE_URL);
+
   if (!LOGIN_SERVICE_URL || !AUTH_SERVICE_URL || !NOTIFICATION_SERVICE_URL || !METADATA_SERVICE_URL) {
     throw new Error('One or more service URLs missing in runtime config');
   }

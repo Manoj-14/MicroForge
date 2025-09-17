@@ -6,3 +6,4 @@ Dockerfile
 .git
 .gitignore
 .env
+config.json

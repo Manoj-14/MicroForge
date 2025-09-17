@@ -27,14 +27,3 @@ LOCK TABLES `users` WRITE;
 INSERT INTO `users` VALUES (2,'2025-09-02 19:01:17.474933','manoj@gmail.com','Manoj',_binary '','M','$2a$10$U4.TiSE5tsoosTOYxCLBeuDMH9HynU0DfdoZzBzb/4NZBBhiSvhRy','2025-09-02 19:01:17.474933','manojm'),(3,'2025-09-02 20:10:10.747614','manumadhu1425@gmail.com','Manoj',_binary '','M','$2a$10$Xb5RqL3DGgHd3CaWjB7M3.Hst1lYFDlqn2qqWildgtvnAz9W0PraW','2025-09-02 20:10:10.747614','manoj14');
 
 UNLOCK TABLES;
-
-
-
-
-
-
-
-
-
-
-
