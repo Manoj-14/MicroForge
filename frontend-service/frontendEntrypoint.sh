@@ -1,4 +1,4 @@
 #!/bin/sh
+set -e
 envsubst < /usr/share/nginx/html/config.template.json > /usr/share/nginx/html/config.json
-
-nginx -g 'daemon off;'
+exec nginx -g 'daemon off;'

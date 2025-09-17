@@ -10,6 +10,8 @@ services:
       - FLASK_ENV=development
       - METADATA_SERVICE_PORT=${METADATA_SERVICE_PORT}
     restart: unless-stopped
+    networks:
+      - microforge-network
 
   auth-service:
     image: manojmdocker14/microforge-auth-service:v1.0.0
@@ -18,10 +20,12 @@ services:
       - "8082:8082"
     environment:
       - AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT}
+    networks:
+      - microforge-network
 
-  microforge-frontend:
-    image: frontend-service:v1
-    container_name: microforge-frontend
+  frontend-service:
+    image: manojmdocker14/microforge-frontend-service:v1.1.0
+    container_name: frontend-service
     ports:
       - "3000:80"
     depends_on:
@@ -29,12 +33,10 @@ services:
       - auth-service
       - login-service
       - notification-service
-    environment:
-      - REACT_APP_LOGIN_SERVICE_URL=http://login-service:${LOGIN_SERVICE_PORT}
-      - REACT_APP_AUTH_SERVICE_URL=http://auth-service:${AUTH_SERVICE_PORT}
-      - REACT_APP_NOTIFICATION_SERVICE_URL=http://notcation-service:${NOTIFICATION_SERVICE_PORT}
-      - REACT_APP_METADATA_SERVICE_URL=http://metadata-service:${METADATA_SERVICE_PORT}
-      - REACT_APP_API_BASE_URL=http://localhost:80
+    env_file:
+      - .env
+    networks:
+      - microforge-network
 
   login-mysql:
     image: mysql
@@ -44,6 +46,7 @@ services:
       MYSQL_DATABASE: ${LOGIN_SERVICE_DB_NAME}
     volumes:
       - ./mysql/empdir_users.sql:/docker-entrypoint-initdb.d/users.sql
+      - mysql-data-login:/var/lib/mysql
     ports:
       - "3308:3306"
     healthcheck:
@@ -52,9 +55,11 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    networks:
+      - microforge-network
 
   login-service:
-    image: manojmdocker14/microforge-login-service:v1.0.0
+    image: manojmdocker14/microforge-login-service:v1.1.0
     container_name: login-service
     ports:
       - 8081:8081
@@ -71,6 +76,8 @@ services:
     depends_on:
       login-mysql:
         condition: service_healthy
+    networks:
+      - microforge-network
 
   notification-mysql:
     image: mysql
@@ -80,6 +87,7 @@ services:
       - MYSQL_DATABASE=${NOTIFICATION_SERVICE_DB_DATABASE}
     volumes:
       - ./mysql/empnotification_notifications.sql:/docker-entrypoint-initdb.d/notifications.sql
+      - mysql-data-notification:/var/lib/mysql
     ports:
       - "3307:3306"
     healthcheck:
@@ -88,6 +96,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    networks:
+      - microforge-network
 
   notification-service:
     image: manojmdocker14/microforge-notification-service:v1.0.0
@@ -104,3 +114,13 @@ services:
     depends_on:
       notification-mysql:
         condition: service_healthy
+    networks:
+      - microforge-network
+
+networks:
+  microforge-network:
+    driver: bridge
+
+volumes:
+  mysql-data-login:
+  mysql-data-notification:
