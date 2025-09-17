@@ -1,0 +1,23 @@
+FROM docker.io/library/node:22-slim AS builder
+
+WORKDIR /app
+
+COPY ./package.json package.json
+COPY ./package-lock.json ./package-lock.json
+
+RUN npm ci
+
+COPY ./src/ src/
+COPY ./public/ public/
+
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=builder /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY config.template.json /usr/share/nginx/html/config.template.json
+COPY frontendEntrypoint.sh /frontendEntrypoint.sh
+RUN chmod +x /frontendEntrypoint.sh
+
+EXPOSE 80
+ENTRYPOINT [ "/frontendEntrypoint.sh" ]
