@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-service
+  namespace: microforge-dev-ns
+  labels:
+    app: frontend-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-service
+  template:
+    metadata:
+      labels:
+        app: frontend-service
+    spec:
+      containers:
+        - name: frontend-service
+          image: manojmdocker14/microforge-frontend-service:v1.1.0
+          ports:
+            - containerPort: 3000
+          env:
+            - name: REACT_APP_LOGIN_SERVICE_URL
+              value: http://login-service:8081
+            - name: REACT_APP_AUTH_SERVICE_URL
+              value: http://auth-service:8082
+            - name: REACT_APP_METADATA_SERVICE_URL
+              value: http://metadata-service:8084
+            - name: REACT_APP_NOTIFICATION_SERVICE_URL
+              value: http://notification-service:8083

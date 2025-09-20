@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-mysql
+  namespace: microforge-dev-ns
+  labels:
+    app: notification-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-mysql
+  template:
+    metadata:
+      labels:
+        app: notification-mysql
+    spec:
+      containers:
+        - name: notification-mysql
+          image: manojmdocker14/microforge-notifications-mysql:v1.0.0
+          ports:
+            - containerPort: 3306
+          envFrom:
+            - configMapRef:
+                name: notification-mysql-config
+            - secretRef:
+                name: notification-mysql-secret
+    

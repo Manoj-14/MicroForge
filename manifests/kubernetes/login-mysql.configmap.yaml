@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: login-mysql-config
+  namespace: microforge-dev-ns
+data:
+  MYSQL_DATABASE: empdir

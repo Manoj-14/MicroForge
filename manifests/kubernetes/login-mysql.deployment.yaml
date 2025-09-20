@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: login-mysql
+  namespace: microforge-dev-ns
+  labels:
+    app: login-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: login-mysql
+  template:
+    metadata:
+      labels:
+        app: login-mysql
+    spec:
+      containers:
+        - name: login-mysql
+          image: manojmdocker14/microforge-users-mysql:v1.0.0
+          ports:
+            - containerPort: 3306
+          envFrom:
+            - configMapRef:
+                name: login-mysql-config
+            - secretRef:
+                name: login-mysql-secret
+    

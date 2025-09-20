@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: login-service
+  namespace: microforge-dev-ns
+  labels:
+    app: login-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: login-service
+  template:
+    metadata:
+      labels:
+        app: login-service
+    spec:
+      containers:
+        - name: login-service
+          image: manojmdocker14/microforge-login-service:v1.1.0
+          ports:
+            - containerPort: 8081
+          env:
+            - name: DB_HOST
+              value: login-mysql
+          envFrom:
+            - configMapRef:
+                name:  login-service-config
+            - secretRef:
+                name:  login-service-secret
