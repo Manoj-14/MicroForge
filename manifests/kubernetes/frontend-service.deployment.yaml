@@ -19,10 +19,10 @@ spec:
         - name: frontend-service
           image: manojmdocker14/microforge-frontend-service:v1.1.0
           ports:
-            - containerPort: 3000
+            - containerPort: 80
           env:
             - name: REACT_APP_LOGIN_SERVICE_URL
-              value: http://login-service:8081
+              value: http://api.microforge.manojm.site
             - name: REACT_APP_AUTH_SERVICE_URL
               value: http://auth-service:8082
             - name: REACT_APP_METADATA_SERVICE_URL
