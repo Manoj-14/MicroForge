@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: metadata-service-config
+  namespace: microforge-dev-ns
+data:
+  METADATA_SERVICE_PORT: "8084"
+  FLASK_ENV: production

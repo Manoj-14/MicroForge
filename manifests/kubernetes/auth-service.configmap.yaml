@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-service-config
+  namespace: microforge-dev-ns
+data:
+  AUTH_SERVICE_PORT: "8082"

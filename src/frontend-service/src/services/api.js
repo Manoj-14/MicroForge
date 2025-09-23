@@ -45,14 +45,14 @@ function ensureReady(apiFn) {
 }
 
 export const apiService = {
-  login: ensureReady((username, password) => loginApi.post('/api/auth/login', { username, password })),
-  register: ensureReady(userData => loginApi.post('/api/auth/register', userData)),
-  validateToken: ensureReady(token => authApi.post('/api/validate', { token })),
-  getUsers: ensureReady(() => loginApi.get('/api/users')),
-  createUser: ensureReady(userData => loginApi.post('/api/users', userData)),
-  updateUser: ensureReady((id, data) => loginApi.put(`/api/users/${id}`, data)),
-  deleteUser: ensureReady(id => loginApi.delete(`/api/users/${id}`)),
-  getUserProfile: ensureReady(() => loginApi.get('/api/users/profile')),
+  login: ensureReady((username, password) => loginApi.post('/api/login/auth', { username, password })),
+  register: ensureReady(userData => loginApi.post('/api/login/register', userData)),
+  validateToken: ensureReady(token => authApi.post('/api/auth/validate', { token })),
+  getUsers: ensureReady(() => loginApi.get('/api/login/users')),
+  createUser: ensureReady(userData => loginApi.post('/api/login/users', userData)),
+  updateUser: ensureReady((id, data) => loginApi.put(`/api/login/users/${id}`, data)),
+  deleteUser: ensureReady(id => loginApi.delete(`/api/login/users/${id}`)),
+  getUserProfile: ensureReady(() => loginApi.get('/api/login/users/profile')),
   getNotifications: ensureReady(() => notificationApi.get('/api/notifications')),
   markNotificationRead: ensureReady(id => notificationApi.put(`/api/notifications/${id}/read`)),
   sendNotification: ensureReady(data => notificationApi.post('/api/notifications/send', data)),
@@ -69,12 +69,83 @@ export const apiService = {
   }),
   getStressStatus: ensureReady(() => metadataApi.get('/api/stress/status')),
   stopStressTest: ensureReady(() => metadataApi.post('/api/stress/stop')),
+  getAuthHealth: ensureReady(() => authApi.get('/api/auth/health')),
+  getLoginHealth: ensureReady(() => loginApi.get('/api/login/health')),
+  getNotificationHealth: ensureReady(() => notificationApi.get('/api/notifications/health')),
+  getMetadataHealth: ensureReady(() => metadataApi.get('/api/metadata/health')),
+  getFrontendHealth: ensureReady(() => {
+  return new Promise((resolve, reject) => {
+    try {
+      // Check various health conditions
+      const isHealthy = document.readyState === 'complete' && window.navigator.onLine;
+      
+      if (isHealthy) {
+        // Return 200 OK response
+        resolve({
+          status: 200,
+          statusText: 'OK',
+          data: {
+            status: 'UP',
+            service: 'React Frontend',
+            timestamp: new Date().toISOString(),
+            version: process.env.REACT_APP_VERSION || '1.0.0',
+            environment: process.env.NODE_ENV || 'development',
+            uptime: Math.floor(performance.now() / 1000),
+            checks: {
+              react_ready: true,
+              dom_ready: document.readyState === 'complete',
+              network_online: window.navigator.onLine
+            }
+          }
+        });
+      } else {
+        // Return 503 Service Unavailable
+        reject({
+          response: {
+            status: 503,
+            statusText: 'Service Unavailable',
+            data: {
+              status: 'DOWN',
+              service: 'React Frontend',
+              timestamp: new Date().toISOString(),
+              error: 'Frontend application not ready',
+              checks: {
+                react_ready: false,
+                dom_ready: document.readyState === 'complete',
+                network_online: window.navigator.onLine
+              }
+            }
+          }
+        });
+      }
+    } catch (error) {
+      // Return 500 Internal Server Error
+      reject({
+        response: {
+          status: 500,
+          statusText: 'Internal Server Error',
+          data: {
+            status: 'ERROR',
+            service: 'React Frontend',
+            timestamp: new Date().toISOString(),
+            error: error.message,
+            checks: {
+              react_ready: false,
+              dom_ready: false,
+              network_online: false
+            }
+          }
+        }
+      });
+    }
+  });
+}),
   getServiceHealth: ensureReady(async () => {
     const services = [
-      { name: 'Login', api: loginApi, url: '/actuator/health' },
-      { name: 'Auth', api: authApi, url: '/api/health' },
-      { name: 'Notification', api: notificationApi, url: '/actuator/health' },
-      { name: 'Metadata', api: metadataApi, url: '/api/health' },
+      { name: 'Login', api: loginApi, url: '/api/login/health' },
+      { name: 'Auth', api: authApi, url: '/api/auth/health' },
+      { name: 'Notification', api: notificationApi, url: '/api/notifications/health' },
+      { name: 'Metadata', api: metadataApi, url: '/api/metadata/health' },
     ];
     return Promise.allSettled(
       services.map(svc => svc.api.get(svc.url).then(
