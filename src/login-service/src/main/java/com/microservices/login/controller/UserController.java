@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/login")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {
 
@@ -28,7 +28,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/profile")
+    @GetMapping("/users/profile")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getUserProfile(Authentication authentication) {
         try {
@@ -46,7 +46,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/profile")
+    @PutMapping("/users/profile")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> updateUserProfile(@Valid @RequestBody UpdateUserRequest updateRequest,
                                                Authentication authentication) {
@@ -66,7 +66,7 @@ public class UserController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/users")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getAllUsers() {
         try {
@@ -83,7 +83,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/users/{userId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> deleteUser(@PathVariable Long userId, Authentication authentication) {
         try {

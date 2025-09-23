@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/login")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class AuthController {
 
@@ -26,7 +26,7 @@ public class AuthController {
     @Autowired
     private NotificationService notificationService;
 
-    @PostMapping("/login")
+    @PostMapping("/auth")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         logger.info("Login attempt for user: {}", loginRequest.getUsername());
 

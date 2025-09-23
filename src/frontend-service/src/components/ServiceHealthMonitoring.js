@@ -27,6 +27,7 @@ import {
   NetworkCheck
 } from '@mui/icons-material';
 import { loadConfig } from "../config";
+import {apiService} from '../services/api';
 
 function ServiceHealthMonitoring() {
   const [services, setServices] = useState([]);
@@ -66,18 +67,13 @@ function ServiceHealthMonitoring() {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
-      
       const startTime = Date.now();
-      const response = await fetch(service.healthUrl, {
-        method: 'GET',
-        signal: controller.signal,
-        mode: 'cors'
-      });
-      
+      const response = await service.getHealth();
+      console.log(`Health check for ${service.name}:`, response);
       clearTimeout(timeoutId);
       const responseTime = Date.now() - startTime;
       
-      if (response.ok) {
+      if (response.status === 200) {
         return {
           ...service,
           status: 'healthy',
@@ -123,7 +119,7 @@ function ServiceHealthMonitoring() {
         {
           name: 'Frontend',
           port: 3000,
-          healthUrl: `${window.location.origin}`,
+          getHealth: apiService.getFrontendHealth,
           endpoints: 4,
           technology: 'React',
           uptime: 'Running',
@@ -134,7 +130,7 @@ function ServiceHealthMonitoring() {
         {
           name: 'Login Service',
           port: 8081,
-          healthUrl: `${LOGIN_SERVICE_URL}/actuator/health`,
+          getHealth: apiService.getLoginHealth,
           endpoints: 6,
           technology: 'Spring Boot',
           uptime: 'N/A',
@@ -145,7 +141,7 @@ function ServiceHealthMonitoring() {
         {
           name: 'Auth Service',
           port: 8082,
-          healthUrl: `${AUTH_SERVICE_URL}/api/health`,
+          getHealth: apiService.getAuthHealth,
           endpoints: 3,
           technology: 'Go',
           uptime: 'N/A',
@@ -156,7 +152,7 @@ function ServiceHealthMonitoring() {
         {
           name: 'Notification Service',
           port: 8083,
-          healthUrl: `${NOTIFICATION_SERVICE_URL}/api/health`,
+          getHealth: apiService.getNotificationHealth,
           endpoints: 8,
           technology: 'Node.js',
           uptime: 'N/A',
@@ -167,7 +163,7 @@ function ServiceHealthMonitoring() {
         {
           name: 'Metadata Service',
           port: 8084,
-          healthUrl: `${METADATA_SERVICE_URL}/api/health`,
+          getHealth: apiService.getMetadataHealth,
           endpoints: 4,
           technology: 'Python',
           uptime: 'N/A',
