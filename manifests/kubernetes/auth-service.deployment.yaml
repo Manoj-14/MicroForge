@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: manojmdocker14/microforge-auth-service:v1.0.0
+          image: manojmdocker14/microforge-auth-service:v1.1.0
           ports:
             - containerPort: 8082
           envFrom:

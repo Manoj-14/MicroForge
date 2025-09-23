@@ -8,4 +8,4 @@ data:
   DB_PORT: "3306"
   DB_NAME: empdir
   JWT_EXPIRATION_MS: "86400000"
-  NOTIFICATION_SERVICE_URL: http://localhost:8083 #TODO: need to update with notification service name
+  NOTIFICATION_SERVICE_URL: http://api.microforge.manojm.site

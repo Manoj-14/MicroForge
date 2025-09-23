@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: manojmdocker14/microforge-notification-service:v1.0.0
+          image: manojmdocker14/microforge-notification-service:v1.1.0
           ports:
             - containerPort: 8083
           env:

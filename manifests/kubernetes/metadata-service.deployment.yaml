@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: metadata-service
-          image: manojmdocker14/microforge-metadata-service:v1.0.0
+          image: manojmdocker14/microforge-metadata-service:v1.1.0
           ports:
             - containerPort: 8084
           envFrom:
