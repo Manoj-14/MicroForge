@@ -7,6 +7,16 @@ metadata:
     app.kubernetes.io/name: microforge-ingress
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
+
+    # CORS Configuration
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Authorization, Content-Type, Accept, Origin, User-Agent, Cache-Control, Keep-Alive"
+    nginx.ingress.kubernetes.io/cors-max-age: "86400"
+
+    # nginx.ingress.kubernetes.io/configuration-snippet: |
+    #   add_header Origin-Agent-Cluster "?0" always;
 spec:
   ingressClassName: nginx
   rules:
@@ -30,6 +40,7 @@ spec:
             name: login-service
             port:
               number: 8081
+
       - path: /api/auth/register(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
@@ -37,6 +48,7 @@ spec:
             name: login-service
             port:
               number: 8081
+
       - path: /api/users(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
@@ -44,6 +56,37 @@ spec:
             name: login-service
             port:
               number: 8081
+
+      - path : /api/metadata(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name:  metadata-service
+            port:
+              number: 8084
       
+      - path : /api/stress(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name:  metadata-service
+            port:
+              number: 8084
+
+      - path : /api/notification(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name:  notification-service
+            port: 
+              number: 8083
+
+      - path: /api/validate(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name:  auth-service
+            port: 
+              number: 8082
 
 

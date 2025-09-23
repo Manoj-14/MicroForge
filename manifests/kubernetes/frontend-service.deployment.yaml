@@ -24,8 +24,8 @@ spec:
             - name: REACT_APP_LOGIN_SERVICE_URL
               value: http://api.microforge.manojm.site
             - name: REACT_APP_AUTH_SERVICE_URL
-              value: http://auth-service:8082
+              value: http://api.microforge.manojm.site
             - name: REACT_APP_METADATA_SERVICE_URL
-              value: http://metadata-service:8084
+              value: http://api.microforge.manojm.site
             - name: REACT_APP_NOTIFICATION_SERVICE_URL
-              value: http://notification-service:8083
+              value: http://api.microforge.manojm.site

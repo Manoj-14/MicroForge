@@ -3,3 +3,4 @@ leaks*.json
 *venv
 *.env
 /.vscode
+*.temp
