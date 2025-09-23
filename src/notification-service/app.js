@@ -15,6 +15,11 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
+app.use((req, res, next) => {
+    res.setHeader('Origin-Agent-Cluster', '?1'); // Enable origin-keying
+    next();
+});
+
 // Security middleware
 app.use(helmet());
 app.use(cors({
@@ -57,7 +62,7 @@ async function initializeDatabase() {
 
 // Routes
 app.use('/api/notifications', notificationRoutes);
-app.use('/api', healthRoutes);
+app.use('/api/notifications', healthRoutes);
 app.use('/actuator', healthRoutes); // Spring Boot compatibility
 
 // 404 handler

@@ -28,17 +28,17 @@ func main() {
 	router.Use(middleware.CORSMiddleware())
 
 	// Health check endpoint
-	router.GET("/api/health", handlers.HealthCheck)
+	router.GET("/api/auth/health", handlers.HealthCheck)
 
 	// Auth routes
-	authRoutes := router.Group("/api")
+	authRoutes := router.Group("/api/auth")
 	{
 		authRoutes.POST("/validate", handlers.ValidateToken)
 		authRoutes.GET("/verify/:token", handlers.VerifyToken)
 	}
 
 	// Protected routes (require valid JWT)
-	protectedRoutes := router.Group("/api/protected")
+	protectedRoutes := router.Group("/api/auth/protected")
 	protectedRoutes.Use(middleware.JWTMiddleware())
 	{
 		protectedRoutes.GET("/profile", handlers.GetProfile)
