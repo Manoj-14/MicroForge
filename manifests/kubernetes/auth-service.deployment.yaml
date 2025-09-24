@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: microforge-dev-ns
+  labels:
+    app: auth-service
+spec:
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: manojmdocker14/microforge-auth-service:v1.1.0
+          ports:
+            - containerPort: 8082
+          envFrom:
+            - configMapRef:
+                name: auth-service-config
+    

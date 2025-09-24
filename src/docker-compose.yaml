@@ -39,13 +39,12 @@ services:
       - microforge-network
 
   login-mysql:
-    image: mysql
+    image: manojmdocker14/microforge-users-mysql:v1.0.0
     container_name: login-mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${LOGIN_SERVICE_DB_PASSWORD}
       MYSQL_DATABASE: ${LOGIN_SERVICE_DB_NAME}
     volumes:
-      - ./mysql/empdir_users.sql:/docker-entrypoint-initdb.d/users.sql
       - mysql-data-login:/var/lib/mysql
     ports:
       - "3308:3306"
@@ -80,13 +79,12 @@ services:
       - microforge-network
 
   notification-mysql:
-    image: mysql
+    image: manojmdocker14/microforge-notifications-mysql:v1.0.0
     container_name: notification-mysql
     environment:
       - MYSQL_ROOT_PASSWORD=${NOTIFICATION_SERVICE_DB_PASSWORD}
       - MYSQL_DATABASE=${NOTIFICATION_SERVICE_DB_DATABASE}
     volumes:
-      - ./mysql/empnotification_notifications.sql:/docker-entrypoint-initdb.d/notifications.sql
       - mysql-data-notification:/var/lib/mysql
     ports:
       - "3307:3306"

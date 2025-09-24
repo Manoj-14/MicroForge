@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notification-mysql-config
+  namespace: microforge-dev-ns
+data:
+  MYSQL_DATABASE: empdirempnotification
