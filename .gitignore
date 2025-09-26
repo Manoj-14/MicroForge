@@ -4,3 +4,6 @@ leaks*.json
 *.env
 /.vscode
 *.temp
+*.tfstate*
+*.tfvars
+.terraform
