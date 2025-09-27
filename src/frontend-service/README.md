@@ -1,70 +1,96 @@
-# Getting Started with Create React App
+## ⚛️ Frontend Service (React + Material-UI)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Overview
+React 18 application with Material-UI components, providing the user interface for the microservices platform.
 
-## Available Scripts
+### Prerequisites
+```bash
+# Local Development
+- Node.js 18+ 
+- npm 9+
 
-In the project directory, you can run:
+# Verify installation
+node --version
+npm --version
+```
 
-### `npm start`
+### Local Development Setup
+```bash
+# Navigate to frontend service
+cd src/frontend-service
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+# Install dependencies
+npm install
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+# Copy environment configuration
+cp .env.example .env
 
-### `npm test`
+# Edit configuration
+nano .env
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+**Required Environment Variables:**
+```bash
+# .env file for frontend-service
+REACT_APP_LOGIN_SERVICE_URL=http://localhost:8081
+REACT_APP_AUTH_SERVICE_URL=http://localhost:8082
+REACT_APP_NOTIFICATION_SERVICE_URL=http://localhost:8083
+REACT_APP_METADATA_SERVICE_URL=http://localhost:8084
+REACT_APP_API_BASE_URL=http://localhost:3000
 
-### `npm run build`
+# Optional: Development settings
+GENERATE_SOURCEMAP=true
+REACT_APP_ENV=development
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Build and Run Locally
+```bash
+# Start development server with hot reload
+npm start
+# Runs on http://localhost:3000
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# Build for production
+npm run build
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Serve production build locally (requires serve package)
+npm install -g serve
+serve -s build -l 3000
+```
 
-### `npm run eject`
+### Docker Build
+```bash
+# Build Docker image locally
+docker build -t microforge-frontend-service:local .
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# Run with Docker
+docker run -p 3000:80 \
+  -e REACT_APP_LOGIN_SERVICE_URL=http://localhost:8081 \
+  -e REACT_APP_AUTH_SERVICE_URL=http://localhost:8082 \
+  microforge-frontend-service:local
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Runtime Configuration
+The frontend service supports runtime configuration injection:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+# config.template.json (gets processed at runtime)
+{
+  "loginServiceUrl": "$REACT_APP_LOGIN_SERVICE_URL",
+  "authServiceUrl": "$REACT_APP_AUTH_SERVICE_URL",
+  "notificationServiceUrl": "$REACT_APP_NOTIFICATION_SERVICE_URL",
+  "metadataServiceUrl": "$REACT_APP_METADATA_SERVICE_URL"
+}
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Development Workflow
+```bash
+# Start all backend services first
+cd ../
+docker-compose up -d auth-service login-service metadata-service notification-service
 
-## Learn More
+# Then start frontend in development mode
+cd frontend-service
+npm start
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# Access application at http://localhost:3000
+```
