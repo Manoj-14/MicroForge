@@ -469,7 +469,8 @@ All images are available on Docker Hub:
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit changes (`git commit -m 'Add amazing feature'`)
 4. Push to branch (`git push origin feature/amazing-feature`) 
-5. Open a Pull Request
+5. Open a Pull Request with `stage` branch
+6. Don't Open a Pull Request with `master` it will be rejected 
 
 ### Contact
 - **Author**: Manoj M - DevOps Engineer & Full-Stack Developer
