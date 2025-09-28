@@ -28,7 +28,7 @@ module "eks" {
 }
 
 resource "null_resource" "update-kubeconfig" {
-  depends_on = [ module.eks ]
+  depends_on = [module.eks]
   provisioner "local-exec" {
     command = <<EOT
       aws eks update-kubeconfig --name ${module.eks.cluster_name} --region ${var.aws_region}
