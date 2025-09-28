@@ -26,3 +26,12 @@ module "eks" {
   tags               = { "project-name" : var.project_name, "environment" : terraform.workspace }
   depends_on         = [module.vpc]
 }
+
+resource "null_resource" "update-kubeconfig" {
+  depends_on = [ module.eks ]
+  provisioner "local-exec" {
+    command = <<EOT
+      aws eks update-kubeconfig --name ${module.eks.cluster_name} --region ${var.aws_region}
+    EOT
+  }
+}
