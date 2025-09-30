@@ -6,12 +6,12 @@ on:
         - master
         - feature/workflows
       paths:
-        - ./infrastructure/*
-        - ./.github/workflows/*
+        - infrastructure/*
+        - .github/workflows/*
     workflow_dispatch:
 
 env:
-  ENVIRONMENT: ${{github.ref == 'refs/heads/master' && 'producation' || 'stage'}}
+  ENVIRONMENT: ${{github.ref == 'refs/heads/master' && 'production' || 'stage'}}
 
 jobs:
   terraform:
