@@ -62,5 +62,8 @@ jobs:
       - name: Terraform apply
         run: terraform apply -auto-approve -no-color -input=false -parallelism=1 planfile
 
+      - name: Check kubernetes installation/version
+        run: kubectl version
+
       - name: Kubernetes git nodes
         run: kubectl get nodes
