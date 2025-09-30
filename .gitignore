@@ -7,3 +7,4 @@ leaks*.json
 *.tfstate*
 *.tfvars
 .terraform
+*.secrets
