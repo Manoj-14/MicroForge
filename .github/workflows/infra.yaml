@@ -7,6 +7,7 @@ on:
         - feature/workflows
       paths:
         - ./infrastructure/*
+        - ./.github/workflows/*
     workflow_dispatch:
 
 env:
@@ -59,7 +60,7 @@ jobs:
         run: exit 1
 
       - name: Terraform apply
-        run: terraform apply -auto-approve -input=false -parallelism=1 planfile
+        run: terraform apply -auto-approve -no-color -input=false -parallelism=1 planfile
 
       - name: Kubernetes git nodes
         run: kubectl get nodes
