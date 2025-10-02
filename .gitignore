@@ -5,5 +5,5 @@ leaks*.json
 /.vscode
 *.temp
 *.tfstate*
-*.tfvars
 .terraform
+*.secrets
