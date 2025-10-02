@@ -62,7 +62,8 @@ jobs:
       - name: Terraform apply
         run: terraform apply -auto-approve -no-color -input=false -parallelism=1 planfile
   
-  kubernetes-verifiction:
+  kubernetes-infra-verifiction:
+    needs: infrastructure-creation
     runs-on: ubuntu-latest
     defaults:
       run:
