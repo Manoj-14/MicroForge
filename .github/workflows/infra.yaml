@@ -94,5 +94,5 @@ jobs:
         run: kubectl wait --for=condition=Ready nodes --all --timeout=300s
 
       - name: Namespace deployment
-        run: kubectl apply -f manifests/microforge.namespace.yaml
+        run: kubectl apply -f manifests/kubernetes/microforge.namespace.yaml
     
