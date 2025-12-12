@@ -70,6 +70,12 @@ jobs:
         shell: bash
     
     steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup kubernetes
+        run: bash scripts/k8s-setup.sh
+
       - name: Check kubernetes installation/version
         run: kubectl version
 
