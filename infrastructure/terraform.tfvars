@@ -42,8 +42,8 @@ node_groups = {
     }
   }
 }
-developer_username = "developer-user"
-devops_username    = "devops"
+developer_username = "manoj-m"
+devops_username    = "manm-win"
 
 cluster_policys = [
   "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
