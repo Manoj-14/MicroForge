@@ -72,12 +72,6 @@ jobs:
     steps:
       - name: Code Checkout
         uses: actions/checkout@v4
-        
-      - name: Setup kubernetes
-        run: bash scripts/k8s-setup.sh
-
-      - name: Check kubernetes installation/version
-        run: kubectl version
 
       - name: AWS Configure
         uses: aws-actions/configure-aws-credentials@v4.1.0
@@ -88,6 +82,13 @@ jobs:
 
       - name: Update KubeConfig
         run: aws eks update-kubeconfig --region ${{secrets.AWS_REGION}} --name ${{secrets.EKS_CLUSTER_NAME}}
+
+      - name: Setup kubernetes
+        run: bash scripts/k8s-setup.sh
+
+      - name: Check kubernetes installation/version
+        run: kubectl version
+
 
       - name: Check Whether all Nodes are Ready
         run: kubectl wait --for=condition=Ready nodes --all --timeout=300s
