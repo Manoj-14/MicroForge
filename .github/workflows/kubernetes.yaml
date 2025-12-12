@@ -19,7 +19,6 @@ jobs:
         defaults:
           run:
             shell: bash
-            working-directory: ./manifests/kubernetes
 
         steps:
           - name: Code Checkout
@@ -40,6 +39,9 @@ jobs:
 
           - name: Check Whether all Nodes are Ready
             run: kubectl wait --for=condition=Ready nodes --all --timeout=300s
+
+          - name: Create/Update Namespace
+            run: kubectl apply -f manifests/kubernetes/microforge.namespace.yaml
 
           - name: Deploy secrets to cluster
             run: |
@@ -66,8 +68,6 @@ jobs:
                 --from-literal=MYSQL_PASSWORD=${{secrets.NOTIFICATION_SERVICE_MYSQL_PASSWORD}} \
                 --namespace=microforge-dev-ns --dry-run=client -o yaml | kubectl apply -f -
 
-          - name: Create/Update Namespace
-            run: kubectl apply -f microforge.namespace.yaml
 
           - name: Apply other manifests
-            run: kubectl apply -f .
+            run: kubectl apply -f manifests/kubernetes/.
