@@ -62,7 +62,7 @@ jobs:
       - name: Terraform apply
         run: terraform apply -auto-approve -no-color -input=false -parallelism=1 planfile
   
-  kubernetes-infra-verifiction:
+  kubernetes-infra-applicatiom-deployment:
     needs: infrastructure-creation
     runs-on: ubuntu-latest
     defaults:
@@ -92,4 +92,7 @@ jobs:
 
       - name: Check Whether all Nodes are Ready
         run: kubectl wait --for=condition=Ready nodes --all --timeout=300s
+
+      - name: Namespace deployment
+        run: kubectl apply -f manifests/microforge.namespace.yaml
     
