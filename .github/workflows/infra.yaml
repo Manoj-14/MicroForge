@@ -14,7 +14,7 @@ env:
   ENVIRONMENT: ${{github.ref == 'refs/heads/master' && 'production' || 'stage'}}
 
 jobs:
-  terraform:
+  infrastructure-creation:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -61,9 +61,39 @@ jobs:
 
       - name: Terraform apply
         run: terraform apply -auto-approve -no-color -input=false -parallelism=1 planfile
+  
+  # kubernetes-infra-applicatiom-deployment:
+  #   needs: infrastructure-creation
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       shell: bash
+    
+  #   steps:
+  #     - name: Code Checkout
+  #       uses: actions/checkout@v4
 
-      - name: Check kubernetes installation/version
-        run: kubectl version
+  #     - name: AWS Configure
+  #       uses: aws-actions/configure-aws-credentials@v4.1.0
+  #       with:
+  #           aws-region: ${{secrets.AWS_REGION}}
+  #           aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+  #           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
 
-      - name: Kubernetes git nodes
-        run: kubectl get nodes
+  #     - name: Update KubeConfig
+  #       run: aws eks update-kubeconfig --region ${{secrets.AWS_REGION}} --name ${{secrets.EKS_CLUSTER_NAME}}
+
+  #     - name: Setup kubernetes
+  #       run: bash scripts/k8s-setup.sh
+
+  #     - name: Check kubernetes installation/version
+  #       run: kubectl version
+
+
+  #     - name: Check Whether all Nodes are Ready
+  #       run: kubectl wait --for=condition=Ready nodes --all --timeout=300s
+
+  #     - name: Namespace deployment
+  #       run: kubectl apply -f manifests/kubernetes/microforge.namespace.yaml
+
+    

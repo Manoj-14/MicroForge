@@ -1,0 +1,73 @@
+name: Kubernetes Application Deployment
+on:
+    push:
+        branches: 
+            - master
+            - stage
+            - feature/workflows
+        paths:
+          - manifests/kubernetes/*
+          - .github/workflows/*
+    workflow_dispatch:
+
+env:
+    ENVIRONMENT: ${{github.ref == 'refs/heads/master' && 'production' || 'stage'}}
+
+jobs:
+    Deploy:
+        runs-on: ubuntu-latest
+        defaults:
+          run:
+            shell: bash
+
+        steps:
+          - name: Code Checkout
+            uses: actions/checkout@v4
+
+          - name: AWS Configure
+            uses: aws-actions/configure-aws-credentials@v4.1.0
+            with:
+                aws-region: ${{secrets.AWS_REGION}}
+                aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+                aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+
+          - name: Update KubeConfig
+            run: aws eks update-kubeconfig --region ${{secrets.AWS_REGION}} --name ${{secrets.EKS_CLUSTER_NAME}}
+
+          - name: Setup kubernetes
+            run: bash scripts/k8s-setup.sh
+
+          - name: Check Whether all Nodes are Ready
+            run: kubectl wait --for=condition=Ready nodes --all --timeout=300s
+
+          - name: Create/Update Namespace
+            run: kubectl apply -f manifests/kubernetes/microforge.namespace.yaml
+
+          - name: Deploy secrets to cluster
+            run: |
+                kubeclt create secret generic login-mysql-secret \
+                --from-literal=MYSQL_ROOT_PASSWORD=${{secrets.LOGIN_MYSQL_MYSQL_ROOT_PASSWORD}} \
+                --namespace=microforge-dev-ns --dry-run=client -o yaml | kubectl apply -f -
+
+                kubectl create secret generic login-service-secret \
+                --from-literal=DB_USERNAME=${{secrets.LOGIN_SERVICE_DB_USERNAME}} \
+                --from-literal=DB_PASSWORD=${{secrets.LOGIN_SERVICE_DB_PASSWORD}} \
+                --from-iteral=JWT_SECRET=${{secrets.LOGIN_SERVICE_JWT_SECRET}} \
+                --namespace=microforge-dev-ns --dry-run=client -o yaml | kubectl apply -f -
+
+                kubectl create secret generic metadata-service-secret \
+                --from-literal=FLASK_SECRET_KEY=${{secrets.METADATA_SERVICE_FLASK_SECRET_KEY}} \
+                --namespace=microforge-dev-ns --dry-run=client -o yaml | kubectl apply -f -
+
+                kubectl create secret generic notification-mysql-secret \
+                --from-literal=MYSQL_ROOT_PASSWORD=${{secrets.NOTIFICATION_MYSQL_MYSQL_ROOT_PASSWORD}} \
+                --namespace=microforge-dev-ns --dry-run=client -o yaml | kubectl apply -f -
+
+                kubectl create secret generic notification-service-secret \
+                --from-literal=MYSQL_USER=${{secrets.NOTIFICATION_SERVICE_MYSQL_USER}} \
+                --from-literal=MYSQL_PASSWORD=${{secrets.NOTIFICATION_SERVICE_MYSQL_PASSWORD}} \
+                --namespace=microforge-dev-ns --dry-run=client -o yaml | kubectl apply -f -
+
+
+          - name: Apply other manifests
+            run: kubectl apply -f manifests/kubernetes/.
