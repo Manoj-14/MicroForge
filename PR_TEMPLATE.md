@@ -3,7 +3,7 @@
 
 # 📄 `PR_TEMPLATE.md`
 
-```md
+
 ## 📌 Description
 
 Please provide a clear and concise description of the changes in this PR.
