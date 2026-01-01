@@ -105,7 +105,7 @@ help wanted
 **👉 Before starting work, comment on the issue and ask to be assigned.**
 
 ## Caution:
-Never work directly on `main`.  
+Never work directly on `main` branch.  
 All pull requests should target the `stage` branch.
 
 ### 🌿 Branching Guidelines
