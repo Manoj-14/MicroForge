@@ -89,6 +89,7 @@ Frontend: http://localhost:3000
 
 If the page loads, your setup works 🎉
 
+
 ### 🐛 Picking an Issue
 
 Look at open issues:
@@ -102,6 +103,10 @@ help wanted
 ```
 
 **👉 Before starting work, comment on the issue and ask to be assigned.**
+
+## Caution:
+Never work directly on `main`.  
+All pull requests should target the `stage` branch.
 
 ### 🌿 Branching Guidelines
 
