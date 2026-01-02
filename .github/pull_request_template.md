@@ -1,7 +1,7 @@
 
 ---
 
-# 📄 `PR_TEMPLATE.md`
+# 📄 `Pull Request Template`
 
 
 ## 📌 Description
