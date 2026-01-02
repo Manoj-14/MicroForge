@@ -40,7 +40,7 @@ jobs:
                     pull_number: prNumber,
                     state: 'closed'
                 });
-
+                
           - name: Comment for PR for other branches
             if: github.event.pull_request.base.ref != 'master'
             uses: actions/github-script@v8
