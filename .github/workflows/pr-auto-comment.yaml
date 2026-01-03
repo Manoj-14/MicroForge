@@ -1,0 +1,62 @@
+name: PR Auto Comment
+on:
+    pull_request_target:
+        branches:
+          - master
+          - stage
+        types:
+          - opened
+
+permissions:
+    pull-requests: write
+    issues: write
+
+jobs:
+    comment:
+        runs-on: ubuntu
+        steps:
+          - name: Comment for PR for branch master
+            if: github.event.pull_request.base.ref == 'master'
+            uses: actions/github-script@v8
+            with:
+              script: |
+                const prNumber = context.payload.pull_request.number;
+                const owner = context.repo.owner;
+                const repo = context.repo.repo;
+                const user = context.payload.pull_request.user.login
+
+                const commentBody = `### 🚫 Pull Request Policy Violation\n\nHi @${user}, thanks for your contribution! \n\nDirect PRs to the **master** branch are not allowed. Please close this PR and target the **stage** branch instead for review.`;
+
+                await github.rest.issues.createComment({
+                    owner,
+                    repo,
+                    issue_number: prNumber,
+                    body: commentBody
+                });
+
+                await github.rest.pulls.update({
+                    owner,
+                    repo,
+                    pull_number: prNumber,
+                    state: 'closed'
+                });
+                
+          - name: Comment for PR for other branches
+            if: github.event.pull_request.base.ref != 'master'
+            uses: actions/github-script@v8
+            with:
+              script: |
+                    const prNumber = context.payload.pull_request.number;
+                    const owner = context.repo.owner;
+                    const repo = context.repo.repo;
+                    const user = context.payload.pull_request.user.login
+
+                    const commentBody = `### Hi @${user} Thanks for creating a PR for your Issue! ☺️\n\nWe'll review it as soon as possible.\nIn the meantime, please double-check the **file changes** and ensure that **all commits** are accurate.\n\nIf there are any **unresolved review comments**, feel free to resolve them. 🙌🏼`;
+
+                    await github.rest.issues.createComment({
+                        owner,
+                        repo,
+                        issue_number: prNumber,
+                        body: commentBody
+                    });
+
