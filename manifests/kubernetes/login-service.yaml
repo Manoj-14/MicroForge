@@ -1,3 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: login-service-config
+  namespace: microforge-dev-ns
+data:
+  LOGIN_SERVICE_PORT: "8081"
+  DB_PORT: "3306"
+  DB_NAME: empdir
+  JWT_EXPIRATION_MS: "86400000"
+  NOTIFICATION_SERVICE_URL: http://api.microforge.manojm.site
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: login-service
+  namespace: microforge-dev-ns
+spec:
+  selector:
+    app:  login-service
+  type: ClusterIP
+  ports:
+  - name:  login-service-port
+    port:  8081
+    targetPort:  8081
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
