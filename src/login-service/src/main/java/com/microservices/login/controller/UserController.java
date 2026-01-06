@@ -1,10 +1,8 @@
 package com.microservices.login.controller;
 
 import com.microservices.login.dto.ApiResponse;
-import com.microservices.login.dto.RegisterRequest;
 import com.microservices.login.dto.UpdateUserRequest;
 import com.microservices.login.dto.UserResponse;
-import com.microservices.login.exception.EmailAlreadyExistsException;
 import com.microservices.login.model.User;
 import com.microservices.login.service.UserService;
 import com.microservices.login.security.JwtAuthenticationToken;
@@ -47,23 +45,7 @@ public class UserController {
                     .body(new ApiResponse(false, "Error retrieving user profile"));
         }
     }
-    @PostMapping("/users")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest)
-    {
-        try {
-            User user = userService.createUser(registerRequest);
-            UserResponse userResponse = new UserResponse(user);
-            logger.info("New user registered: {}", user.getUsername());
-            return ResponseEntity.status(201).body(userResponse);
-        }
-        catch (EmailAlreadyExistsException e) {
-        logger.warn("Registration failed, email already exists: {}",
-                registerRequest.getEmail());
 
-        return ResponseEntity.status(409)
-                .body(new ApiResponse(false, e.getMessage()));
-    }
-    }
     @PutMapping("/users/profile")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> updateUserProfile(@Valid @RequestBody UpdateUserRequest updateRequest,
