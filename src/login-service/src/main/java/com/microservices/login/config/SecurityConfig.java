@@ -44,7 +44,6 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/login/users").permitAll()
                         .requestMatchers("/api/login/auth").permitAll()
                         .requestMatchers("/api/login/register").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
