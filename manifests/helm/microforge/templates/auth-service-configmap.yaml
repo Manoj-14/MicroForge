@@ -1,0 +1,10 @@
+{{- if .Values.authService.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.authService.name }}-config
+  namespace: {{ include "microforge.namespace" . }}
+data:
+  AUTH_SERVICE_PORT: {{ .Values.authService.config.port | quote }}
+{{- end }}
+

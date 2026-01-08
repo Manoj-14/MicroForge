@@ -1,0 +1,18 @@
+{{- if .Values.loginService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.loginService.name }}
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.loginService.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: {{ .Values.loginService.name }}
+  type: {{ .Values.loginService.service.type }}
+  ports:
+  - name: login-service-port
+    port: {{ .Values.loginService.service.port }}
+    targetPort: {{ .Values.loginService.service.targetPort }}
+{{- end }}
+

@@ -1,0 +1,11 @@
+{{- if .Values.metadataService.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.metadataService.name }}-config
+  namespace: {{ include "microforge.namespace" . }}
+data:
+  METADATA_SERVICE_PORT: {{ .Values.metadataService.config.port | quote }}
+  FLASK_ENV: {{ .Values.metadataService.config.flaskEnv }}
+{{- end }}
+

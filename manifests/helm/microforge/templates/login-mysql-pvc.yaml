@@ -1,0 +1,19 @@
+{{- if and .Values.loginMysql.enabled .Values.loginMysql.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.loginMysql.name }}-pvc
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.loginMysql.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.loginMysql.persistence.accessMode }}
+  {{- if .Values.loginMysql.persistence.storageClass }}
+  storageClassName: {{ .Values.loginMysql.persistence.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.loginMysql.persistence.size }}
+{{- end }}
+

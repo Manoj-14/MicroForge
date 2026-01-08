@@ -1,0 +1,17 @@
+apiVersion: v2
+name: microforge
+description: A Helm chart for MicroForge - Enterprise-Grade Microservices Platform
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - microservices
+  - polyglot
+  - kubernetes
+  - devops
+maintainers:
+  - name: Manoj M
+    email: manojmanjunathhs@gmail.com
+sources:
+  - https://github.com/Manoj-14/MicroForge
+

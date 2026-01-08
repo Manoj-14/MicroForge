@@ -1,0 +1,121 @@
+# Production values for MicroForge
+# Override default values for production deployment
+
+global:
+  namespace: microforge-prod-ns
+  environment: production
+
+namespace:
+  create: true
+  name: microforge-prod-ns
+  labels:
+    environment: production
+
+# Ingress with TLS
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    main: microforge.example.com
+    api: api.microforge.example.com
+  tls:
+    - secretName: microforge-tls
+      hosts:
+        - microforge.example.com
+        - api.microforge.example.com
+
+# Frontend Service - Multiple replicas for HA
+frontendService:
+  replicaCount: 3
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+
+# Auth Service - Multiple replicas
+authService:
+  replicaCount: 2
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+
+# Login Service - Multiple replicas with higher resources
+loginService:
+  replicaCount: 3
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+    requests:
+      cpu: 1000m
+      memory: 1Gi
+  secrets:
+    # IMPORTANT: Change these in production!
+    dbUsername: produser
+    dbPassword: CHANGE_ME_PRODUCTION_PASSWORD
+    jwtSecret: CHANGE_ME_PRODUCTION_JWT_SECRET
+
+# Metadata Service
+metadataService:
+  replicaCount: 2
+  config:
+    flaskEnv: production
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  secrets:
+    # IMPORTANT: Change this in production!
+    flaskSecretKey: CHANGE_ME_PRODUCTION_FLASK_KEY
+
+# Notification Service
+notificationService:
+  replicaCount: 2
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  secrets:
+    # IMPORTANT: Change these in production!
+    mysqlUser: produser
+    mysqlPassword: CHANGE_ME_PRODUCTION_PASSWORD
+
+# Production should use external managed databases
+# Disable internal MySQL deployments
+loginMysql:
+  enabled: false
+
+notificationMysql:
+  enabled: false
+
+# If using internal MySQL (not recommended for production):
+# loginMysql:
+#   enabled: true
+#   replicaCount: 1
+#   persistence:
+#     enabled: true
+#     storageClass: "fast-ssd"
+#     size: 50Gi
+#   resources:
+#     limits:
+#       cpu: 2000m
+#       memory: 4Gi
+#     requests:
+#       cpu: 1000m
+#       memory: 2Gi
+#   secrets:
+#     rootPassword: CHANGE_ME_PRODUCTION_PASSWORD
+

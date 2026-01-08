@@ -1,0 +1,18 @@
+{{- if .Values.notificationMysql.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.notificationMysql.name }}
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.notificationMysql.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: {{ .Values.notificationMysql.name }}
+  type: {{ .Values.notificationMysql.service.type }}
+  ports:
+  - name: mysql-port
+    port: {{ .Values.notificationMysql.service.port }}
+    targetPort: {{ .Values.notificationMysql.service.targetPort }}
+{{- end }}
+

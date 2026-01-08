@@ -1,0 +1,31 @@
+{{- if .Values.frontendService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.frontendService.name }}
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.frontendService.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.frontendService.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.frontendService.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.frontendService.name }}
+    spec:
+      containers:
+      - name: {{ .Values.frontendService.name }}
+        image: "{{ .Values.frontendService.image.repository }}:{{ .Values.frontendService.image.tag }}"
+        imagePullPolicy: {{ .Values.frontendService.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.frontendService.service.targetPort }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.frontendService.name }}-config
+        resources:
+          {{- toYaml .Values.frontendService.resources | nindent 10 }}
+{{- end }}
+
