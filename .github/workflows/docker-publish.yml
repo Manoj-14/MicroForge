@@ -2,11 +2,27 @@ name: Docker Build & Push
 
 on:
   push:
-    branches: [ "master", "SetupDocker" ]
+    branches: [ "master" ]
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    
+    # MATRIX STRATEGY: This runs the job 5 times in parallel!
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: auth-service
+            image-name: auth-service
+          - service: frontend-service
+            image-name: frontend-service
+          - service: login-service
+            image-name: login-service
+          - service: metadata-service
+            image-name: metadata-service
+          - service: notification-service
+            image-name: notification-service
 
     steps:
       - name: Checkout code
@@ -21,11 +37,16 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push
+      - name: Build and push ${{ matrix.service }}
         uses: docker/build-push-action@v5
         with:
-          context: .               # Uses the Dockerfile in the root folder
+          context: .
+          file: ./Dockerfile
           push: true
+          # THE MAGIC PART: We specify exactly which 'stage' to build
+          target: ${{ matrix.service }}
+          
+          # This creates tags like: yourname/microforge-auth-service:latest
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/microforge:latest
-            ${{ secrets.DOCKER_USERNAME }}/microforge:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/microforge-${{ matrix.image-name }}:latest
+            ${{ secrets.DOCKER_USERNAME }}/microforge-${{ matrix.image-name }}:${{ github.sha }}
