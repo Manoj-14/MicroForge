@@ -43,6 +43,32 @@ spec:
           image: manojmdocker14/microforge-notifications-mysql:v1.0.0
           ports:
             - containerPort: 3306
+          startupProbe:
+            exec:
+              command:
+                - bash
+                - "-c"
+                - "mysqladmin ping -u root -p$MYSQL_ROOT_PASSWORD"
+            initialDelaySeconds: 15  # Wait 15s before starting the first check
+            periodSeconds: 10        # Check every 10s
+            failureThreshold: 30     # Allow 30 failures (Total 5 minutes of boot time)
+          livenessProbe:
+            exec:
+              command:
+                - bash
+                - "-c"
+                - "mysqladmin ping -u root -p$MYSQL_ROOT_PASSWORD"
+            periodSeconds: 20
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+                - bash
+                - "-c"
+                - "mysql -u root -p$MYSQL_ROOT_PASSWORD -e 'SELECT 1;'"
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 10
           envFrom:
             - configMapRef:
                 name: notification-mysql-config
