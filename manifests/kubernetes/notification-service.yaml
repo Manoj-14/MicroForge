@@ -45,6 +45,20 @@ spec:
           image: manojmdocker14/microforge-notification-service:v1.1.0
           ports:
             - containerPort: 8083
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8083
+            initialDelaySeconds: 45 # Increased for DB connection setup
+            periodSeconds: 20
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8083
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
           env:
             - name: MYSQL_HOST
               value: notification-mysql
