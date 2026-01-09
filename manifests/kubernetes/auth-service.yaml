@@ -42,6 +42,20 @@ spec:
           image: manojmdocker14/microforge-auth-service:v1.1.0
           ports:
             - containerPort: 8082
+          livenessProbe:
+            httpGet:
+              path: /api/auth/health
+              port: 8082
+            initialDelaySeconds: 45
+            periodSeconds: 20
+            timeoutSeconds: 10        
+          readinessProbe:
+            httpGet:
+              path: /api/auth/health
+              port: 8082
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
           envFrom:
             - configMapRef:
                 name: auth-service-config
