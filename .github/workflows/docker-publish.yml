@@ -27,5 +27,5 @@ jobs:
           context: .               # Uses the Dockerfile in the root folder
           push: true
           tags: |
-            brother5012/microforge:latest
-            brother5012/microforge:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/microforge:latest
+            ${{ secrets.DOCKER_USERNAME }}/microforge:${{ github.sha }}
