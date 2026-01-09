@@ -1,28 +1,30 @@
-name: Docker Build & Push
+name: Docker Build & Push Services
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "SetupDocker" ]
 
 jobs:
-  build-and-push:
+  build-and-push-services:
     runs-on: ubuntu-latest
-    
-    # MATRIX STRATEGY: This runs the job 5 times in parallel!
     strategy:
-      fail-fast: false
       matrix:
-        include:
-          - service: auth-service
-            image-name: auth-service
-          - service: frontend-service
-            image-name: frontend-service
-          - service: login-service
-            image-name: login-service
-          - service: metadata-service
-            image-name: metadata-service
-          - service: notification-service
-            image-name: notification-service
+        service:
+          - name: auth-service
+            image_suffix: microforge-auth-service
+            version: v1.0.0
+          - name: frontend-service
+            image_suffix: microforge-frontend-service
+            version: v1.1.0
+          - name: login-service
+            image_suffix: microforge-login-service
+            version: v1.1.0
+          - name: metadata-service
+            image_suffix: microforge-metadata-service
+            version: v1.0.0
+          - name: notification-service
+            image_suffix: microforge-notification-service
+            version: v1.0.0
 
     steps:
       - name: Checkout code
@@ -37,16 +39,13 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push ${{ matrix.service }}
+      - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
+          target: ${{ matrix.service.name }}
           push: true
-          # THE MAGIC PART: We specify exactly which 'stage' to build
-          target: ${{ matrix.service }}
-          
-          # This creates tags like: yourname/microforge-auth-service:latest
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/microforge-${{ matrix.image-name }}:latest
-            ${{ secrets.DOCKER_USERNAME }}/microforge-${{ matrix.image-name }}:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.image_suffix }}:${{ matrix.service.version }}
+            ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.image_suffix }}:latest
