@@ -43,6 +43,20 @@ spec:
           image: manojmdocker14/microforge-metadata-service:v1.1.0
           ports:
             - containerPort: 8084
+          readinessProbe:
+            httpGet:
+              path: /api/metadata/health
+              port: 8084
+            initialDelaySeconds: 45
+            periodSeconds: 20
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /api/metadata/health
+              port: 8084
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            timeoutSeconds: 5
           envFrom:
             - configMapRef:
                 name: metadata-service-config
