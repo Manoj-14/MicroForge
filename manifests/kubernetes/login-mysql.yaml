@@ -1,3 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: login-mysql-config
+  namespace: microforge-dev-ns
+data:
+  MYSQL_DATABASE: empdir
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: login-mysql
+  namespace: microforge-dev-ns
+  labels:
+    app: login-mysql
+spec:
+  selector:
+    app: login-mysql
+  type: ClusterIP
+  ports:
+    - name: login-mysql-port
+      port: 3306
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,4 +48,3 @@ spec:
                 name: login-mysql-config
             - secretRef:
                 name: login-mysql-secret
-    
