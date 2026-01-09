@@ -55,7 +55,8 @@ FROM eclipse-temurin:21.0.5_11-jdk-jammy AS login-service-builder
 
 WORKDIR /app
 
-COPY ./src/login-service/mvnw ./src/login-service/.mvn ./
+COPY ./src/login-service/mvnw ./
+COPY ./src/login-service/.mvn/ ./.mvn/
 COPY ./src/login-service/pom.xml ./
 
 RUN chmod +x mvnw && ./mvnw dependency:go-offline
