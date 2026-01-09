@@ -2,7 +2,7 @@ name: Docker Build & Push Services
 
 on:
   push:
-    branches: [ "master", "SetupDocker" ]
+    branches: [ "master"]
 
 jobs:
   build-and-push-services:
@@ -49,3 +49,4 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.image_suffix }}:${{ matrix.service.version }}
             ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.image_suffix }}:latest
+            ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.image_suffix }}:${{github.sha}}
