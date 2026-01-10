@@ -2,7 +2,7 @@ name: Docker Build & Push Services
 
 on:
   push:
-    branches: [ "master"]
+    branches: [ "master", "stage"]
 
 jobs:
   build-and-push-services:
