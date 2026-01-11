@@ -1,0 +1,14 @@
+{{- if .Values.frontendService.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.frontendService.name }}-config
+  namespace: {{ include "microforge.namespace" . }}
+data:
+  REACT_APP_LOGIN_SERVICE_URL: {{ .Values.frontendService.config.reactAppLoginServiceUrl }}
+  REACT_APP_AUTH_SERVICE_URL: {{ .Values.frontendService.config.reactAppAuthServiceUrl }}
+  REACT_APP_NOTIFICATION_SERVICE_URL: {{ .Values.frontendService.config.reactAppNotificationServiceUrl }}
+  REACT_APP_METADATA_SERVICE_URL: {{ .Values.frontendService.config.reactAppMetadataServiceUrl }}
+  REACT_APP_API_BASE_URL: {{ .Values.frontendService.config.reactAppApiBaseUrl }}
+{{- end }}
+

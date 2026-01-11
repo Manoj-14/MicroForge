@@ -1,0 +1,18 @@
+{{- if .Values.metadataService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.metadataService.name }}
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.metadataService.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: {{ .Values.metadataService.name }}
+  type: {{ .Values.metadataService.service.type }}
+  ports:
+  - name: metadata-service-port
+    port: {{ .Values.metadataService.service.port }}
+    targetPort: {{ .Values.metadataService.service.targetPort }}
+{{- end }}
+

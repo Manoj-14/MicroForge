@@ -1,0 +1,36 @@
+{{- if .Values.loginService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.loginService.name }}
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.loginService.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.loginService.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.loginService.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.loginService.name }}
+    spec:
+      containers:
+      - name: {{ .Values.loginService.name }}
+        image: "{{ .Values.loginService.image.repository }}:{{ .Values.loginService.image.tag }}"
+        imagePullPolicy: {{ .Values.loginService.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.loginService.service.targetPort }}
+        env:
+        - name: DB_HOST
+          value: {{ .Values.loginMysql.name }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.loginService.name }}-config
+        - secretRef:
+            name: {{ .Values.loginService.name }}-secret
+        resources:
+          {{- toYaml .Values.loginService.resources | nindent 10 }}
+{{- end }}
+

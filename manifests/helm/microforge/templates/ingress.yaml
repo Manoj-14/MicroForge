@@ -1,0 +1,69 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "microforge.fullname" . }}-ingress
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.labels" . | nindent 4 }}
+  annotations:
+    {{- range $key, $value := .Values.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- if .Values.ingress.tls }}
+  tls:
+    {{- toYaml .Values.ingress.tls | nindent 4 }}
+  {{- end }}
+  rules:
+  - host: {{ .Values.ingress.hosts.main }}
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: {{ .Values.frontendService.name }}
+            port: 
+              number: {{ .Values.frontendService.service.port }}
+  - host: {{ .Values.ingress.hosts.api }}
+    http:
+      paths:
+      - path: /api/login(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ .Values.loginService.name }}
+            port:
+              number: {{ .Values.loginService.service.port }}
+      - path: /api/metadata(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ .Values.metadataService.name }}
+            port:
+              number: {{ .Values.metadataService.service.port }}
+      - path: /api/stress(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ .Values.metadataService.name }}
+            port:
+              number: {{ .Values.metadataService.service.port }}
+      - path: /api/notifications(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ .Values.notificationService.name }}
+            port: 
+              number: {{ .Values.notificationService.service.port }}
+      - path: /api/auth(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ .Values.authService.name }}
+            port: 
+              number: {{ .Values.authService.service.port }}
+{{- end }}
+

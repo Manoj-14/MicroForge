@@ -1,0 +1,44 @@
+{{- if .Values.loginMysql.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.loginMysql.name }}
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.loginMysql.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.loginMysql.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.loginMysql.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.loginMysql.name }}
+    spec:
+      containers:
+      - name: {{ .Values.loginMysql.name }}
+        image: "{{ .Values.loginMysql.image.repository }}:{{ .Values.loginMysql.image.tag }}"
+        imagePullPolicy: {{ .Values.loginMysql.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.loginMysql.service.targetPort }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.loginMysql.name }}-config
+        - secretRef:
+            name: {{ .Values.loginMysql.name }}-secret
+        resources:
+          {{- toYaml .Values.loginMysql.resources | nindent 10 }}
+        {{- if .Values.loginMysql.persistence.enabled }}
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+        {{- end }}
+      {{- if .Values.loginMysql.persistence.enabled }}
+      volumes:
+      - name: mysql-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.loginMysql.name }}-pvc
+      {{- end }}
+{{- end }}
+

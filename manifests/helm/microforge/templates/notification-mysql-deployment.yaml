@@ -1,0 +1,44 @@
+{{- if .Values.notificationMysql.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.notificationMysql.name }}
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.notificationMysql.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.notificationMysql.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.notificationMysql.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.notificationMysql.name }}
+    spec:
+      containers:
+      - name: {{ .Values.notificationMysql.name }}
+        image: "{{ .Values.notificationMysql.image.repository }}:{{ .Values.notificationMysql.image.tag }}"
+        imagePullPolicy: {{ .Values.notificationMysql.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.notificationMysql.service.targetPort }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.notificationMysql.name }}-config
+        - secretRef:
+            name: {{ .Values.notificationMysql.name }}-secret
+        resources:
+          {{- toYaml .Values.notificationMysql.resources | nindent 10 }}
+        {{- if .Values.notificationMysql.persistence.enabled }}
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+        {{- end }}
+      {{- if .Values.notificationMysql.persistence.enabled }}
+      volumes:
+      - name: mysql-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.notificationMysql.name }}-pvc
+      {{- end }}
+{{- end }}
+

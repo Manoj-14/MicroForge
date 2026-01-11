@@ -1,0 +1,31 @@
+{{- if .Values.authService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.authService.name }}
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.authService.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.authService.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.authService.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.authService.name }}
+    spec:
+      containers:
+      - name: {{ .Values.authService.name }}
+        image: "{{ .Values.authService.image.repository }}:{{ .Values.authService.image.tag }}"
+        imagePullPolicy: {{ .Values.authService.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.authService.service.targetPort }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.authService.name }}-config
+        resources:
+          {{- toYaml .Values.authService.resources | nindent 10 }}
+{{- end }}
+
