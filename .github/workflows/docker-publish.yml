@@ -57,5 +57,4 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/microforge:${{ matrix.service.name }}-${{ matrix.service.version }}
             ${{ secrets.DOCKER_USERNAME }}/microforge:${{ matrix.service.name }}-latest
             ${{ secrets.DOCKER_USERNAME }}/microforge:${{ matrix.service.name }}-${{ github.sha }}
-            # Additional Logic for Version Input.
             ${{ inputs.version != '' && format('{0}/microforge:{1}-{2}', secrets.DOCKER_USERNAME, matrix.service.name, inputs.version) || '' }}
