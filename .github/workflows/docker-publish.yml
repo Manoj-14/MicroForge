@@ -2,7 +2,7 @@ name: Docker Build & Push Services
 
 on:
   push:
-    branches: [ "master", "stage", "docker/setup-push-pipeline"]
+    branches: [ "master"]
   # Manual Trigger
   workflow_dispatch:
     inputs:
