@@ -15,6 +15,8 @@ kind: Service
 metadata:
   name: login-service
   namespace: microforge-dev-ns
+  labels:
+    app: login-service
 spec:
   selector:
     app:  login-service
@@ -33,6 +35,11 @@ metadata:
     app: login-service
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1        
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: login-service
@@ -43,9 +50,23 @@ spec:
     spec:
       containers:
         - name: login-service
-          image: manojmdocker14/microforge-login-service:v1.2.0
+          image: manojmdocker14/microforge-login-service:v1.1.0
           ports:
             - containerPort: 8081
+          livenessProbe:
+            httpGet:
+              path: /actuator/health 
+              port: 8081
+            initialDelaySeconds: 70
+            periodSeconds: 20
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health 
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
           env:
             - name: DB_HOST
               value: login-mysql

@@ -30,6 +30,11 @@ metadata:
     app: login-mysql
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1        
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: login-mysql
@@ -43,6 +48,32 @@ spec:
           image: manojmdocker14/microforge-users-mysql:v1.0.0
           ports:
             - containerPort: 3306
+          startupProbe:
+            exec:
+              command:
+                - bash
+                - "-c"
+                - "mysqladmin ping -u root -p${MYSQL_ROOT_PASSWORD}"
+            failureThreshold: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - bash
+                - "-c"
+                - "mysqladmin ping -u root -p${MYSQL_ROOT_PASSWORD}" 
+            periodSeconds: 20
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+                - bash
+                - "-c"
+                - "mysql -u root -p${MYSQL_ROOT_PASSWORD} -e 'SELECT 1;'"
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
           envFrom:
             - configMapRef:
                 name: login-mysql-config

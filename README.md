@@ -148,7 +148,7 @@ kubectl get pods -n microforge-dev-ns
 
 ### **Authentication Service (Go - Port 8082)**
 ```http
-GET  /api/health              # Health check
+GET  /api/auth/health         # Health check
 POST /api/validate            # JWT token validation
 GET  /api/verify/:token       # Token verification
 GET  /api/protected/profile   # Protected user profile
@@ -164,7 +164,7 @@ GET  /api/users               # User management
 
 ### **Metadata Service (Python - Port 8084)**
 ```http
-GET  /api/health              # Health check
+GET  /api/metadata/health     # Health check
 GET  /api/metadata/instance   # System instance metadata
 GET  /api/metadata/deployment # Deployment information
 POST /api/stress/start        # Performance stress testing
