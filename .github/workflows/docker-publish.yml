@@ -2,7 +2,14 @@ name: Docker Build & Push Services
 
 on:
   push:
-    branches: [ "master", "stage"]
+    branches: [ "master", "stage", "docker/setup-push-pipeline"]
+  # Manual Trigger
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version Tag (e.g., v1.2.0)'
+        required: true
+        default: 'manual-latest'
 
 jobs:
   build-and-push-services:
@@ -47,6 +54,8 @@ jobs:
           target: ${{ matrix.service.name }}
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.image_suffix }}:${{ matrix.service.version }}
-            ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.image_suffix }}:latest
-            ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.image_suffix }}:${{github.sha}}
+            ${{ secrets.DOCKER_USERNAME }}/microforge:${{ matrix.service.name }}-${{ matrix.service.version }}
+            ${{ secrets.DOCKER_USERNAME }}/microforge:${{ matrix.service.name }}-latest
+            ${{ secrets.DOCKER_USERNAME }}/microforge:${{ matrix.service.name }}-${{ github.sha }}
+            # Additional Logic for Version Input.
+            ${{ inputs.version != '' && format('{0}/microforge:{1}-{2}', secrets.DOCKER_USERNAME, matrix.service.name, inputs.version) || '' }}
