@@ -50,7 +50,7 @@ spec:
     spec:
       containers:
         - name: login-service
-          image: manojmdocker14/microforge-login-service:v1.1.0
+          image: manojmdocker14/microforge-login-service:v1.2.0
           ports:
             - containerPort: 8081
           livenessProbe:
