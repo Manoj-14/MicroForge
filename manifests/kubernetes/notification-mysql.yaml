@@ -4,7 +4,7 @@ metadata:
   name: notification-mysql-config
   namespace: microforge-dev-ns
 data:
-  MYSQL_DATABASE: empdirempnotification
+  MYSQL_DATABASE: empnotification
 ---
 apiVersion: v1
 kind: Service
