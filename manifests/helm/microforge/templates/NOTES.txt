@@ -1,55 +1,13 @@
 Thank you for installing {{ .Chart.Name }}!
 
-Your release is named {{ .Release.Name }}.
-
-To learn more about the release, try:
-
-  $ helm status {{ .Release.Name }}
-  $ helm get all {{ .Release.Name }}
-
-{{ if .Values.ingress.enabled }}
-The application has been configured with Ingress.
-
-You can access the application at:
-  - Frontend: http://{{ .Values.ingress.hosts.main }}
-  - API Gateway: http://{{ .Values.ingress.hosts.api }}
-
-If you're running locally, you may need to add these entries to your hosts file:
-  127.0.0.1  {{ .Values.ingress.hosts.main }}
-  127.0.0.1  {{ .Values.ingress.hosts.api }}
-{{ else }}
-Ingress is disabled. To access the frontend service, run:
-
-  $ kubectl port-forward service/{{ .Values.frontendService.name }} 3000:80 -n {{ include "microforge.namespace" . }}
-
-Then access the application at: http://localhost:3000
-{{ end }}
-
-To check the status of your deployment:
-
-  $ kubectl get pods -n {{ include "microforge.namespace" . }}
-  $ kubectl get services -n {{ include "microforge.namespace" . }}
-
-To view logs from a service:
-
-  $ kubectl logs -f deployment/{{ .Values.frontendService.name }} -n {{ include "microforge.namespace" . }}
-  $ kubectl logs -f deployment/{{ .Values.authService.name }} -n {{ include "microforge.namespace" . }}
-  $ kubectl logs -f deployment/{{ .Values.loginService.name }} -n {{ include "microforge.namespace" . }}
-
-Service Endpoints (when using port-forward):
-  - Frontend Service: http://localhost:3000
-  - Auth Service: http://localhost:8082
+Access your services:
+  - Frontend: http://localhost:3000
   - Login Service: http://localhost:8081
+  - Auth Service: http://localhost:8082
   - Notification Service: http://localhost:8083
   - Metadata Service: http://localhost:8084
 
-Health Check Endpoints:
-  - Auth Service: http://localhost:8082/api/health
-  - Login Service: http://localhost:8081/actuator/health
-  - Notification Service: http://localhost:8083/actuator/health
-  - Metadata Service: http://localhost:8084/api/health
-
-For more information, visit:
-  - GitHub: https://github.com/Manoj-14/MicroForge
-  - Documentation: manifests/helm/microforge/README.md
+Check status:
+  kubectl get pods -n {{ include "microforge.namespace" . }}
+  kubectl get services -n {{ include "microforge.namespace" . }}
 

@@ -40,8 +40,8 @@ frontendService:
     tag: v1.1.0
     pullPolicy: IfNotPresent
   service:
-    type: ClusterIP
-    port: 80
+    type: LoadBalancer
+    port: 3000
     targetPort: 80
   resources:
     limits:
@@ -67,7 +67,7 @@ authService:
     tag: v1.1.0
     pullPolicy: IfNotPresent
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 8082
     targetPort: 8082
   resources:
@@ -90,7 +90,7 @@ loginService:
     tag: v1.2.0
     pullPolicy: IfNotPresent
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 8081
     targetPort: 8081
   resources:
@@ -107,6 +107,8 @@ loginService:
     jwtExpirationMs: "86400000"
     notificationServiceUrl: http://notification-service:8083
   secrets:
+    # Values are read from src/.env file via install script
+    # Default values from .env file:
     dbUsername: root
     dbPassword: loginroot
     jwtSecret: wybg9X4lzPycHWrvCBkPvssgGq3OowN2JWvQqOoe/g/u9wKiXXv71NAdngG83DFx
@@ -121,7 +123,7 @@ metadataService:
     tag: v1.0.0
     pullPolicy: IfNotPresent
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 8084
     targetPort: 8084
   resources:
@@ -135,6 +137,8 @@ metadataService:
     port: "8084"
     flaskEnv: development
   secrets:
+    # Values are read from src/.env file via install script
+    # Default value from .env file:
     flaskSecretKey: f9731e7a0774ddebd70643e8c6046f4dc0ddf3eec637be8cb641f0e9d5e8dfd0
 
 # Notification Service Configuration
@@ -147,7 +151,7 @@ notificationService:
     tag: v1.0.0
     pullPolicy: IfNotPresent
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 8083
     targetPort: 8083
   resources:
@@ -162,6 +166,8 @@ notificationService:
     mysqlPort: "3306"
     mysqlDatabase: empnotification
   secrets:
+    # Values are read from src/.env file via install script
+    # Default values from .env file:
     mysqlUser: root
     mysqlPassword: root
 
@@ -193,6 +199,8 @@ loginMysql:
   config:
     database: empdir
   secrets:
+    # Values are read from src/.env file via install script
+    # Default value from .env file:
     rootPassword: loginroot
 
 # Notification MySQL Configuration
@@ -223,5 +231,7 @@ notificationMysql:
   config:
     database: empnotification
   secrets:
+    # Values are read from src/.env file via install script
+    # Default value from .env file:
     rootPassword: root
 
