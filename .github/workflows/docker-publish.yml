@@ -2,7 +2,7 @@ name: Docker Build & Push Services
 
 on:
   push:
-    branches: [ "master"]
+    branches: [ "master",'docker/setup-push-pipeline']
   # Manual Trigger with dropdown
   workflow_dispatch:
     inputs:
@@ -31,19 +31,14 @@ jobs:
         service:
           - name: auth-service
             image_suffix: microforge-auth-service
-            version: v1.0.0
           - name: frontend-service
             image_suffix: microforge-frontend-service
-            version: v1.1.0
           - name: login-service
             image_suffix: microforge-login-service
-            version: v1.1.0
           - name: metadata-service
             image_suffix: microforge-metadata-service
-            version: v1.0.0
           - name: notification-service
             image_suffix: microforge-notification-service
-            version: v1.0.0
 
     steps:
       - name: Checkout code
@@ -57,26 +52,19 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Determine Version
-        id: versioning
-        run: |
-          if [[ "${{ inputs.version }}" != "" ]]; then
-            echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
-          else
-            echo "VERSION=${{ matrix.service.version }}" >> $GITHUB_ENV
-          fi
       - name: Build and push
         uses: docker/build-push-action@v5
-        # LOGIC: Run if target is 'all' OR if the current matrix service matches the input
-        if: ${{ inputs.service_target == 'all' || inputs.service_target == matrix.service.name || github.event_name == 'push' }}
+        # LOGIC: Run if target is 'all' OR matches the current service name
+        if: ${{ inputs.service_target == 'all' || inputs.service_target == matrix.service || github.event_name == 'push' }}
+        env:
+          # Logic: Only create this tag if input.version is NOT empty
+          MANUAL_TAG: ${{ inputs.version != '' && format('{0}/microforge:{1}-{2}', secrets.DOCKER_USERNAME, matrix.service, inputs.version) || '' }}
         with:
           context: .
           file: ./Dockerfile
           target: ${{ matrix.service.name }}
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/microforge:${{ matrix.service.name }}-${{ env.VERSION }}
             ${{ secrets.DOCKER_USERNAME }}/microforge:${{ matrix.service.name }}-latest
             ${{ secrets.DOCKER_USERNAME }}/microforge:${{ matrix.service.name }}-${{ github.sha }}
-            ${{ inputs.version != '' && format('{0}/microforge:{1}-{2}', secrets.DOCKER_USERNAME, matrix.service.name, inputs.version) || '' }}
+            ${{ env.MANUAL_TAG }}
