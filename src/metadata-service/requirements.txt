@@ -6,3 +6,4 @@ psutil==5.9.6
 requests==2.31.0
 python-dotenv==1.0.0
 gunicorn==21.2.0
+prometheus-client
