@@ -1,0 +1,18 @@
+{{- if .Values.loginMysql.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.loginMysql.name }}
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.loginMysql.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: {{ .Values.loginMysql.name }}
+  type: {{ .Values.loginMysql.service.type }}
+  ports:
+  - name: mysql-port
+    port: {{ .Values.loginMysql.service.port }}
+    targetPort: {{ .Values.loginMysql.service.targetPort }}
+{{- end }}
+

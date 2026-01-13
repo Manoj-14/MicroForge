@@ -1,0 +1,14 @@
+{{- if .Values.loginService.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.loginService.name }}-config
+  namespace: {{ include "microforge.namespace" . }}
+data:
+  LOGIN_SERVICE_PORT: {{ .Values.loginService.config.port | quote }}
+  DB_PORT: {{ .Values.loginService.config.dbPort | quote }}
+  DB_NAME: {{ .Values.loginService.config.dbName }}
+  JWT_EXPIRATION_MS: {{ .Values.loginService.config.jwtExpirationMs | quote }}
+  NOTIFICATION_SERVICE_URL: {{ .Values.loginService.config.notificationServiceUrl }}
+{{- end }}
+

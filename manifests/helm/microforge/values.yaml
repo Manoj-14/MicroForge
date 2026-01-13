@@ -1,0 +1,237 @@
+# Default values for MicroForge
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global settings
+global:
+  namespace: microforge-dev-ns
+  environment: development
+
+# Namespace configuration
+namespace:
+  create: true
+  name: microforge-dev-ns
+  labels:
+    environment: dev
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Authorization, Content-Type, Accept, Origin, User-Agent, Cache-Control, Keep-Alive"
+    nginx.ingress.kubernetes.io/cors-max-age: "86400"
+  hosts:
+    main: microforge.local
+    api: api.microforge.local
+  tls: []
+
+# Frontend Service Configuration
+frontendService:
+  enabled: true
+  name: frontend-service
+  replicaCount: 1
+  image:
+    repository: manojmdocker14/microforge-frontend-service
+    tag: v1.1.0
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer
+    port: 3000
+    targetPort: 80
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  config:
+    reactAppLoginServiceUrl: http://localhost:8081
+    reactAppAuthServiceUrl: http://localhost:8082
+    reactAppNotificationServiceUrl: http://localhost:8083
+    reactAppMetadataServiceUrl: http://localhost:8084
+    reactAppApiBaseUrl: http://localhost:3000
+
+# Auth Service Configuration
+authService:
+  enabled: true
+  name: auth-service
+  replicaCount: 1
+  image:
+    repository: manojmdocker14/microforge-auth-service
+    tag: v1.1.0
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer
+    port: 8082
+    targetPort: 8082
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  config:
+    port: "8082"
+
+# Login Service Configuration
+loginService:
+  enabled: true
+  name: login-service
+  replicaCount: 1
+  image:
+    repository: manojmdocker14/microforge-login-service
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer
+    port: 8081
+    targetPort: 8081
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  config:
+    port: "8081"
+    dbPort: "3306"
+    dbName: empdir
+    jwtExpirationMs: "86400000"
+    notificationServiceUrl: http://notification-service:8083
+  secrets:
+    # Values are read from src/.env file via install script
+    # Default values from .env file:
+    dbUsername: root
+    dbPassword: loginroot
+    jwtSecret: wybg9X4lzPycHWrvCBkPvssgGq3OowN2JWvQqOoe/g/u9wKiXXv71NAdngG83DFx
+
+# Metadata Service Configuration
+metadataService:
+  enabled: true
+  name: metadata-service
+  replicaCount: 1
+  image:
+    repository: manojmdocker14/microforge-metadata-service
+    tag: v1.0.0
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer
+    port: 8084
+    targetPort: 8084
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  config:
+    port: "8084"
+    flaskEnv: development
+  secrets:
+    # Values are read from src/.env file via install script
+    # Default value from .env file:
+    flaskSecretKey: f9731e7a0774ddebd70643e8c6046f4dc0ddf3eec637be8cb641f0e9d5e8dfd0
+
+# Notification Service Configuration
+notificationService:
+  enabled: true
+  name: notification-service
+  replicaCount: 1
+  image:
+    repository: manojmdocker14/microforge-notification-service
+    tag: v1.0.0
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer
+    port: 8083
+    targetPort: 8083
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  config:
+    port: "8083"
+    mysqlPort: "3306"
+    mysqlDatabase: empnotification
+  secrets:
+    # Values are read from src/.env file via install script
+    # Default values from .env file:
+    mysqlUser: root
+    mysqlPassword: root
+
+# Login MySQL Configuration
+loginMysql:
+  enabled: true
+  name: login-mysql
+  replicaCount: 1
+  image:
+    repository: manojmdocker14/microforge-users-mysql
+    tag: v1.0.0
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3306
+    targetPort: 3306
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    size: 5Gi
+  config:
+    database: empdir
+  secrets:
+    # Values are read from src/.env file via install script
+    # Default value from .env file:
+    rootPassword: loginroot
+
+# Notification MySQL Configuration
+notificationMysql:
+  enabled: true
+  name: notification-mysql
+  replicaCount: 1
+  image:
+    repository: manojmdocker14/microforge-notifications-mysql
+    tag: v1.0.0
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3306
+    targetPort: 3306
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    size: 5Gi
+  config:
+    database: empnotification
+  secrets:
+    # Values are read from src/.env file via install script
+    # Default value from .env file:
+    rootPassword: root
+

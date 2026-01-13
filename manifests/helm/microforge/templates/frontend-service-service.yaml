@@ -1,0 +1,18 @@
+{{- if .Values.frontendService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.frontendService.name }}
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.frontendService.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: {{ .Values.frontendService.name }}
+  type: {{ .Values.frontendService.service.type }}
+  ports:
+  - name: frontend-service-port
+    port: {{ .Values.frontendService.service.port }}
+    targetPort: {{ .Values.frontendService.service.targetPort }}
+{{- end }}
+
