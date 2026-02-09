@@ -212,8 +212,39 @@ MicroForge/
 │   ├── notification-service/# Node.js service
 │   └── docker-compose.yml   # Local development setup
 ├── manifests/kubernetes/    # K8s deployment manifests
+├── scripts/                 # Automation scripts
+│   ├── init.sh             # Terraform initialization script
+│   ├── teardown.sh         # Terraform cleanup script
+│   └── k8s-setup.sh        # Kubernetes setup script
 └── README.md                # Project documentation
 ```
+
+---
+
+## 📜 **Terraform Automation Scripts**
+
+The project includes convenient scripts for Terraform infrastructure management:
+
+### **Initialization Script** (`scripts/init.sh`)
+Automates the complete Terraform setup process:
+```bash
+./scripts/init.sh
+```
+**What it does:**
+- Initializes Terraform with `terraform init -input=false`
+- Validates configuration with `terraform validate`
+- Formats code recursively with `terraform fmt -recursive`
+
+### **Teardown Script** (`scripts/teardown.sh`)
+Cleans up all Terraform-managed resources:
+```bash
+./scripts/teardown.sh
+```
+**What it does:**
+- Destroys all Terraform-managed infrastructure with `terraform destroy --auto-approve`
+- Automatically confirms destruction (non-interactive mode)
+
+> **Note**: Both scripts use `set -e` for error handling, meaning they will exit immediately if any command fails.
 
 ### **Environment Setup**
 ```bash
