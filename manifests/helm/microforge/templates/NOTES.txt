@@ -1,0 +1,13 @@
+Thank you for installing {{ .Chart.Name }}!
+
+Access your services:
+  - Frontend: http://localhost:3000
+  - Login Service: http://localhost:8081
+  - Auth Service: http://localhost:8082
+  - Notification Service: http://localhost:8083
+  - Metadata Service: http://localhost:8084
+
+Check status:
+  kubectl get pods -n {{ include "microforge.namespace" . }}
+  kubectl get services -n {{ include "microforge.namespace" . }}
+

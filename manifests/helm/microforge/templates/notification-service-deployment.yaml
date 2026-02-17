@@ -1,0 +1,36 @@
+{{- if .Values.notificationService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.notificationService.name }}
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.notificationService.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.notificationService.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.notificationService.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.notificationService.name }}
+    spec:
+      containers:
+      - name: {{ .Values.notificationService.name }}
+        image: "{{ .Values.notificationService.image.repository }}:{{ .Values.notificationService.image.tag }}"
+        imagePullPolicy: {{ .Values.notificationService.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.notificationService.service.targetPort }}
+        env:
+        - name: MYSQL_HOST
+          value: {{ .Values.notificationMysql.name }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.notificationService.name }}-config
+        - secretRef:
+            name: {{ .Values.notificationService.name }}-secret
+        resources:
+          {{- toYaml .Values.notificationService.resources | nindent 10 }}
+{{- end }}
+

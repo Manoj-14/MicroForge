@@ -1,0 +1,19 @@
+{{- if and .Values.notificationMysql.enabled .Values.notificationMysql.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.notificationMysql.name }}-pvc
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.notificationMysql.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.notificationMysql.persistence.accessMode }}
+  {{- if .Values.notificationMysql.persistence.storageClass }}
+  storageClassName: {{ .Values.notificationMysql.persistence.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.notificationMysql.persistence.size }}
+{{- end }}
+

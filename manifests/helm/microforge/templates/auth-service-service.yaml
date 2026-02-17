@@ -1,0 +1,18 @@
+{{- if .Values.authService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.authService.name }}
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.authService.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: {{ .Values.authService.name }}
+  type: {{ .Values.authService.service.type }}
+  ports:
+  - name: auth-service-port
+    port: {{ .Values.authService.service.port }}
+    targetPort: {{ .Values.authService.service.targetPort }}
+{{- end }}
+

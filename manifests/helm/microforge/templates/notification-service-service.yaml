@@ -1,0 +1,18 @@
+{{- if .Values.notificationService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.notificationService.name }}
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.notificationService.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: {{ .Values.notificationService.name }}
+  type: {{ .Values.notificationService.service.type }}
+  ports:
+  - name: notification-service-port
+    port: {{ .Values.notificationService.service.port }}
+    targetPort: {{ .Values.notificationService.service.targetPort }}
+{{- end }}
+

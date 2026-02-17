@@ -1,0 +1,10 @@
+{{- if .Values.loginMysql.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.loginMysql.name }}-config
+  namespace: {{ include "microforge.namespace" . }}
+data:
+  MYSQL_DATABASE: {{ .Values.loginMysql.config.database }}
+{{- end }}
+

@@ -1,0 +1,98 @@
+# Staging values for MicroForge
+# Override default values for staging deployment
+
+global:
+  namespace: microforge-staging-ns
+  environment: staging
+
+namespace:
+  create: true
+  name: microforge-staging-ns
+  labels:
+    environment: staging
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    main: microforge-staging.example.com
+    api: api-staging.microforge.example.com
+
+# Moderate replica counts for staging
+frontendService:
+  replicaCount: 2
+  resources:
+    limits:
+      cpu: 750m
+      memory: 768Mi
+    requests:
+      cpu: 375m
+      memory: 384Mi
+
+authService:
+  replicaCount: 2
+  resources:
+    limits:
+      cpu: 750m
+      memory: 768Mi
+    requests:
+      cpu: 375m
+      memory: 384Mi
+
+loginService:
+  replicaCount: 2
+  resources:
+    limits:
+      cpu: 1500m
+      memory: 1536Mi
+    requests:
+      cpu: 750m
+      memory: 768Mi
+  secrets:
+    dbUsername: staginguser
+    dbPassword: CHANGE_ME_STAGING_PASSWORD
+    jwtSecret: CHANGE_ME_STAGING_JWT_SECRET
+
+metadataService:
+  replicaCount: 1
+  config:
+    flaskEnv: staging
+  secrets:
+    flaskSecretKey: CHANGE_ME_STAGING_FLASK_KEY
+
+notificationService:
+  replicaCount: 1
+  secrets:
+    mysqlUser: staginguser
+    mysqlPassword: CHANGE_ME_STAGING_PASSWORD
+
+loginMysql:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 10Gi
+  resources:
+    limits:
+      cpu: 1500m
+      memory: 2Gi
+    requests:
+      cpu: 750m
+      memory: 1Gi
+  secrets:
+    rootPassword: CHANGE_ME_STAGING_PASSWORD
+
+notificationMysql:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 10Gi
+  resources:
+    limits:
+      cpu: 1500m
+      memory: 2Gi
+    requests:
+      cpu: 750m
+      memory: 1Gi
+  secrets:
+    rootPassword: CHANGE_ME_STAGING_PASSWORD
+

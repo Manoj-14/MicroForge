@@ -1,0 +1,12 @@
+{{- if .Values.notificationService.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.notificationService.name }}-config
+  namespace: {{ include "microforge.namespace" . }}
+data:
+  NOTIFICATION_SERVICE_PORT: {{ .Values.notificationService.config.port | quote }}
+  MYSQL_PORT: {{ .Values.notificationService.config.mysqlPort | quote }}
+  MYSQL_DATABASE: {{ .Values.notificationService.config.mysqlDatabase }}
+{{- end }}
+

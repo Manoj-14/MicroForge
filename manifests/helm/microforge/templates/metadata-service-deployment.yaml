@@ -1,0 +1,33 @@
+{{- if .Values.metadataService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.metadataService.name }}
+  namespace: {{ include "microforge.namespace" . }}
+  labels:
+    {{- include "microforge.metadataService.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.metadataService.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.metadataService.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.metadataService.name }}
+    spec:
+      containers:
+      - name: {{ .Values.metadataService.name }}
+        image: "{{ .Values.metadataService.image.repository }}:{{ .Values.metadataService.image.tag }}"
+        imagePullPolicy: {{ .Values.metadataService.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.metadataService.service.targetPort }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.metadataService.name }}-config
+        - secretRef:
+            name: {{ .Values.metadataService.name }}-secret
+        resources:
+          {{- toYaml .Values.metadataService.resources | nindent 10 }}
+{{- end }}
+
