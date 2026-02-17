@@ -51,7 +51,7 @@ jobs:
                 kubectl create secret generic login-service-secret \
                 --from-literal=DB_USERNAME=${{secrets.LOGIN_SERVICE_DB_USERNAME}} \
                 --from-literal=DB_PASSWORD=${{secrets.LOGIN_SERVICE_DB_PASSWORD}} \
-                --from-iteral=JWT_SECRET=${{secrets.LOGIN_SERVICE_JWT_SECRET}} \
+                --from-literal=JWT_SECRET=${{secrets.LOGIN_SERVICE_JWT_SECRET}} \
                 --namespace=microforge-dev-ns --dry-run=client -o yaml | kubectl apply -f -
 
                 kubectl create secret generic metadata-service-secret \
