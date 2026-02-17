@@ -13,12 +13,48 @@ const notificationRoutes = require('./routes/notifications');
 const healthRoutes = require('./routes/health');
 const errorHandler = require('./middleware/errorHandler');
 
+/* =========================
+   🔥 PROMETHEUS SETUP
+========================= */
+const client = require('prom-client');
+
+// Create registry
+const register = new client.Registry();
+
+// Collect default Node.js metrics
+client.collectDefaultMetrics({ register });
+
+// Custom HTTP request counter
+const httpRequestsTotal = new client.Counter({
+    name: 'notification_http_requests_total',
+    help: 'Total HTTP requests to notification service',
+    labelNames: ['method', 'route', 'status']
+});
+
+register.registerMetric(httpRequestsTotal);
+/* ========================= */
+
 const app = express();
 
 app.use((req, res, next) => {
-    res.setHeader('Origin-Agent-Cluster', '?1'); // Enable origin-keying
+    res.setHeader('Origin-Agent-Cluster', '?1');
     next();
 });
+
+/* =========================
+   📊 METRICS MIDDLEWARE
+========================= */
+app.use((req, res, next) => {
+    res.on('finish', () => {
+        httpRequestsTotal.labels(
+            req.method,
+            req.route?.path || req.path,
+            res.statusCode
+        ).inc();
+    });
+    next();
+});
+/* ========================= */
 
 // Security middleware
 app.use(helmet());
@@ -29,8 +65,8 @@ app.use(cors({
 
 // Rate limiting
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
+    windowMs: 15 * 60 * 1000,
+    max: 100,
     message: 'Too many requests from this IP, please try again later.'
 });
 app.use(limiter);
@@ -41,29 +77,40 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Logging middleware
-app.use(morgan('combined', { 
+app.use(morgan('combined', {
     stream: { write: message => logger.info(message.trim()) }
 }));
 
 async function initializeDatabase() {
-  try {
-    await sequelize.authenticate();
-    console.log('📊 Database connected successfully');
-    
-    // Create tables if they don't exist
-    await sequelize.sync();
-    console.log('📋 Database tables synchronized');
-    
-  } catch (error) {
-    console.error('❌ Database connection failed:', error);
-    process.exit(1);
-  }
+    try {
+        await sequelize.authenticate();
+        console.log('📊 Database connected successfully');
+
+        await sequelize.sync();
+        console.log('📋 Database tables synchronized');
+    } catch (error) {
+        console.error('❌ Database connection failed:', error);
+        process.exit(1);
+    }
 }
+
+/* =========================
+   📈 METRICS ENDPOINT
+========================= */
+app.get('/metrics', async (req, res) => {
+    try {
+        res.set('Content-Type', register.contentType);
+        res.end(await register.metrics());
+    } catch (err) {
+        res.status(500).end(err.message);
+    }
+});
+/* ========================= */
 
 // Routes
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/notifications', healthRoutes);
-app.use('/actuator', healthRoutes); // Spring Boot compatibility
+app.use('/actuator', healthRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -90,13 +137,12 @@ process.on('SIGINT', () => {
 
 const PORT = process.env.NOTIFICATION_SERVICE_PORT;
 
-
 initializeDatabase().then(() => {
-  app.listen(PORT, () => {
-    logger.info(`🚀 Notification Service started on port ${PORT}`);
-    logger.info(`📧 Email service configured: ${process.env.MAIL_HOST || 'Not configured'}`);
-    logger.info(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  });
+    app.listen(PORT, () => {
+        logger.info(`🚀 Notification Service started on port ${PORT}`);
+        logger.info(`📧 Email service configured: ${process.env.MAIL_HOST || 'Not configured'}`);
+        logger.info(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
 });
 
 module.exports = app;
