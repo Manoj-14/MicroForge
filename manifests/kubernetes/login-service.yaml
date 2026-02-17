@@ -53,20 +53,20 @@ spec:
           image: manojmdocker14/microforge-login-service:v1.2.0
           ports:
             - containerPort: 8081
-          livenessProbe:
-            httpGet:
-              path: /actuator/health 
-              port: 8081
-            initialDelaySeconds: 70
-            periodSeconds: 20
-            timeoutSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /actuator/health 
-              port: 8081
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
+          # livenessProbe:
+          #   httpGet:
+          #     path: /actuator/health 
+          #     port: 8081
+          #   initialDelaySeconds: 70
+          #   periodSeconds: 20
+          #   timeoutSeconds: 10
+          # readinessProbe:
+          #   httpGet:
+          #     path: /actuator/health 
+          #     port: 8081
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
+          #   timeoutSeconds: 5
           env:
             - name: DB_HOST
               value: login-mysql
