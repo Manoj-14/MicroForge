@@ -4,7 +4,6 @@ on:
         branches: 
             - master
             - stage
-            - feature/workflows
         paths:
           - manifests/kubernetes/*
           - .github/workflows/*
@@ -45,7 +44,7 @@ jobs:
 
           - name: Deploy secrets to cluster
             run: |
-                kubeclt create secret generic login-mysql-secret \
+                kubectl create secret generic login-mysql-secret \
                 --from-literal=MYSQL_ROOT_PASSWORD=${{secrets.LOGIN_MYSQL_MYSQL_ROOT_PASSWORD}} \
                 --namespace=microforge-dev-ns --dry-run=client -o yaml | kubectl apply -f -
 
